@@ -1,0 +1,11 @@
+INDEX VERSION 1.131
+C:\workspace_nexa\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3969698220.index
+\nexacro69\src\main\java
+C:\workspace_nexa\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2824518520.index
+\nexacro69\src\main\java
+C:\workspace_nexa\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1274165912.index
+\nexacro69\src\main\java
+C:\workspace_nexa\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3408384115.index
+\nexacro69\src\main\java
+C:\workspace_nexa\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\27156212.index
+\nexacro69\src\main\java

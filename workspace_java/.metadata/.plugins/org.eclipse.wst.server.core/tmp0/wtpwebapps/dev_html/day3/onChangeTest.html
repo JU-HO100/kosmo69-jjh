@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>onChange 핸들러</title>
+<script type="text/javascript">
+   function check(u_name){
+      if(u_name.value.length>4){
+         alert("4자만 입력할 수 있습니다.");
+         u_name.value="";         
+      }
+   }
+</script>
+</head>
+<body>
+<input type="text" size="20" onchange="check(this)"><!-- this는 자기자신을 가리킨다  -->
+<select id="menu" name="menu" onchange="check2(this)">
+   <option value="김밥">김밥</option>
+   <option value="떡볶이">떡볶이</option>
+   <option value="돈까스">돈까스</option>
+   <option value="냉면">냉면</option>
+   <option value="된장찌개">된장찌개</option>
+   <option value="부대찌개">부대찌개</option>
+</select>
+</body>
+</html>
+
+

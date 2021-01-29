@@ -1,0 +1,34 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	Cookie[] c = request.getCookies();
+	for(int i=0;i<c.length;i++){
+		
+	}
+%>    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script>
+<%
+	String id = request.getParameter("id");
+	String nick = request.getParameter("nick");
+	
+	// 사용자의 로그인 유지 여부를 null 체크로 확인 
+	Cookie id = new Cookie("id", id);
+	id.setMaxAge(60*60);
+	response.addCookie(id);
+	
+	Cookie nick = new Cookie("nick", nick);
+	nick.setMaxAge(60 * 2);
+	nick.setPath("/");
+	
+	response.addCookie(id);
+	response.addCookie(nick);
+%>
+</body>
+</html>

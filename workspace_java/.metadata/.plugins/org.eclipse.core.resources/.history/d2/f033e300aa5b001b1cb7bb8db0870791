@@ -1,0 +1,62 @@
+package np.com.controller;
+
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+import np.mem.model.KakaoDao;
+import np.mem.model.MemberDao;
+
+@Controller
+@RequestMapping("/*")
+public class LoginController {
+	Logger logger = Logger.getLogger(LoginController.class);
+	private final static String K_CLIENT_ID = "f61c36ee28b1fe4d00e270bcf75d344d";
+	private final static String K_REDIRECT_URI = "http://192.168.0.38:8000/member/index.np";
+	
+	@Autowired
+    private KakaoDao kakao;
+	
+	@Autowired
+	private MemberDao memDao;
+	String index = null;
+	String name = null;
+	
+		@RequestMapping(value="/")
+	    public String index() {
+	        logger.info("Con index");
+	        return "index";
+	    }
+	    
+		@RequestMapping(value="member/index.np")
+		public String login(HttpSession session,  @RequestParam("code") String code, HttpServletRequest req) throws Exception {
+//		public String login(HttpSession session, HttpServletRequest req) throws Exception {
+			String access_Token = kakao.getAccessToken(code);
+			logger.info("Con access_Token"+access_Token);
+	        if((String)req.getAttribute("kakaoNick")!=null) {
+	        	name = (String)req.getAttribute("kakaoNick");
+	        } else {
+	        	index = "redirect:login.jsp";
+	        }
+	        logger.info("name"+name);
+	        if (name != null) {
+	        	logger.info("Con 세션 도착");
+	        	index = "forward:index.jsp";
+	        } else {
+	        	logger.info("Con 세션 도착 실패");
+	        	index = "forward:index2.jsp";
+	        }
+	        return index;
+	    }
+		
+		
+		
+}

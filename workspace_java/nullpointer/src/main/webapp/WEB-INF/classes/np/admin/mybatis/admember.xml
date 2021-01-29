@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="np.admin.mybatis.AdMemberMapper"> 
+<!-- resultMap 에 Alias 명으로써 memberVO 를 세팅해준다
+		다른 xml의 resultMap 에 있는 id와 겹치면 안된다.-->
+  <resultMap id="memberVO" type="np.com.vo.MemberVO"/>
+<!-- 위 resultMap 세팅과 아래 parameterType 의 memberVO 는 다른것이다.
+		 아래 parameterType 의 memberVO 는 Configuration.xml 의 typeAliases 에 있는 memberVO를 가져온 것이다.
+-->
+ <select id="proc_admin_memlist" parameterType="memberVO" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+ 	{ 
+	 	call proc_admin_memlist(
+	 	)
+ 	}
+ </select> 
+ 
+ 
+ <!-- 아래에 있는 resultMap과 위에 태그로 세팅된 resultMap 은 같은 것이다. 
+ 		  그러므로 위에 세팅해준 memberVO가 있기에
+ 		  아래 resultMap 에 memberVO 를 입력, 사용가능하다
+ -->
+    
+ <!-- 미구현(회원 셰프 승인) -->
+     <select id="proc_updateMypage" parameterType="memberVO" statementType="CALLABLE">
+        {
+            CALL proc_updateMypage(
+            )
+        }
+    </select>
+    
+ <!-- 미구현(회원 밴) -->
+     <select id="proc_withDraw" parameterType="memberVO" statementType="CALLABLE">
+        {
+            CALL proc_withDraw(
+            )
+        }
+    </select>
+
+
+</mapper>

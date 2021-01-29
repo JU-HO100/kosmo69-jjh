@@ -1,0 +1,86 @@
+package np.com.member;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+/*
+ * AOP 프레임워크를 활용하여 트랜잭션 처리하는 구간임.
+ */
+public class MemberLogic {
+   Logger logger = Logger.getLogger(MemberLogic.class);
+   private SqlMemberMDao sqlBoardMDao = null;
+   //SqlBoardMDao에 대한 setter객체 주입 코드
+   public void setSqlBoardMDao(SqlMemberMDao sqlBoardMDao) {
+      this.sqlBoardMDao = sqlBoardMDao;
+   }
+   private SqlMemberDDao sqlBoardDDao = null;
+   //SqlBoardDDao에 대한 setter객체 주입 코드
+   public void setSqlBoardDDao(SqlMemberDDao sqlBoardDDao) {
+      this.sqlBoardDDao = sqlBoardDDao;
+   }
+   public int boardInsert(Map<String, Object> pMap) {
+      logger.info("boardInsert 호출 성공"+pMap);
+      int result = 0;
+      int bm_no = 0;
+      int bm_group = 0;
+      if(pMap.get("bm_group")!=null) {
+         bm_group = Integer.parseInt(pMap.get("bm_group").toString());
+      }
+      //글번호 채번한 결과를 파라미터에 저장
+      bm_no = sqlBoardMDao.getBmno();
+      pMap.put("bm_no",bm_no);
+      //너 댓글이니?
+      if(bm_group > 0) {
+         pMap.put("bm_group",bm_group);
+         sqlBoardMDao.bmStepUpdate(pMap);
+         int pos = 0;
+         int step = 0;
+         if(pMap.get("bm_pos") !=null) {
+            pos = Integer.parseInt(pMap.get("bm_pos").toString());
+         }
+         pMap.put("bm_pos", pos+1);
+         if(pMap.get("bm_step") !=null) {
+            step = Integer.parseInt(pMap.get("bm_step").toString());
+         }
+         pMap.put("bm_step", step+1);
+      }
+      //너 새글이야?
+      else { 
+         bm_group = sqlBoardMDao.getBmGroup();
+         pMap.put("bm_group", bm_group);
+         pMap.put("bm_pos", 0);
+         pMap.put("bm_step", 0);
+      }
+      int mresult = sqlBoardMDao.boardMInsert(pMap);
+      //첨부파일이 있니?
+      if(pMap.get("bs_file")!=null && pMap.get("bs_file").toString().length() > 1) {
+         pMap.put("bm_no",bm_no);
+         pMap.put("bm_seq",1);
+         int dresult = sqlBoardDDao.boardDInsert(pMap);
+      }
+      return mresult;
+   }
+   public List<Map<String, Object>> boardList(Map<String, Object> pMap) {
+      logger.info("boardList 호출 성공"+pMap);
+      List<Map<String, Object>> bList = null;
+      bList = sqlBoardMDao.boardList(pMap);
+      return bList;
+   }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

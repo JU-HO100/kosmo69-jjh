@@ -1,0 +1,114 @@
+[
+	{
+		"EMPNO": 7369,
+		"ENAME": "SMITH",
+		"HIREDATE": "Jan 23, 1982 12:00:00 AM",
+		"JOB": "CLERK",
+		"SAL": "800",
+		"DEPTNO": 20
+	},
+	{	
+		"EMPNO": 	7521,	
+		"ENAME": 	"ALLEN",
+		"HIREDATE": "Dec 17, 1980 12:00:00 AM",
+		"JOB":  	"SALESMAN",
+		"SAL":  	"1600",
+		"DEPTNO": 	30
+	},
+	{	
+		"EMPNO": 	7499,	
+		"ENAME": 	"WARD",
+		"HIREDATE": "Feb 20, 1981 12:00:00 AM",
+		"JOB":  	"SALESMAN",
+		"SAL":  	"1250",
+		"DEPTNO": 	30
+	},
+	{	
+		"EMPNO": 	7566,	
+		"ENAME": 	"JONES",
+		"HIREDATE": "Feb 22, 1981 12:00:00 AM",
+		"JOB":  	"MANAGER",
+		"SAL":  	"2975",
+		"DEPTNO": 	20
+	},
+	{	
+		"EMPNO": 	7654,	
+		"ENAME": 	"MARTIN",
+		"HIREDATE": "Apr 2, 1981 12:00:00 AM",
+		"JOB":  	"SALESMAN",
+		"SAL":  	"1250",
+		"DEPTNO": 	30
+	},
+	{	
+		"EMPNO": 	7698,	
+		"ENAME": 	"BLAKE",
+		"HIREDATE": "Sep 28, 1981 12:00:00 AM",
+		"JOB":  	"MANAGER",
+		"SAL":  	"2850",
+		"DEPTNO": 	30
+	},
+	{	
+		"EMPNO": 	7782,	
+		"ENAME": 	"CLARK",
+		"HIREDATE": "May 1, 1981 12:00:00 AM",
+		"JOB":  	"MANAGER",
+		"SAL":  	"2450",
+		"DEPTNO": 	10
+	},
+	{	
+		"EMPNO": 	7788,	
+		"ENAME": 	"SCOTT",
+		"HIREDATE": "Jun 9, 1981 12:00:00 AM",
+		"JOB":  	"ANALYST",
+		"SAL":  	"3000",
+		"DEPTNO": 	20
+	},
+	{	
+		"EMPNO": 	7839,	
+		"ENAME": 	"KING",
+		"HIREDATE": "Apr 19, 1987 12:00:00 AM",
+		"JOB":  	"PRESIDENT",
+		"SAL":  	"5000",
+		"DEPTNO": 	10
+	},
+	{	
+		"EMPNO": 	7844,	
+		"ENAME": 	"TURNER",
+		"HIREDATE": "Nov 17, 1981 12:00:00 AM",
+		"JOB":  	"SALESMAN",
+		"SAL":  	"1500",
+		"DEPTNO": 	30
+	},
+	{	
+		"EMPNO": 	7876,	
+		"ENAME": 	"ADAMS",
+		"HIREDATE": "Sep 8, 1981 12:00:00 AM",
+		"JOB":  	"CLERK",
+		"SAL":  	"1100",
+		"DEPTNO": 	20
+	},
+	{	
+		"EMPNO": 	7900,	
+		"ENAME": 	"JAMES",
+		"HIREDATE": "May 23, 1987 12:00:00 AM",
+		"JOB":  	"CLERK",
+		"SAL":  	"950",
+		"DEPTNO": 	20
+	},
+	{	
+		"EMPNO": 	7902,	
+		"ENAME": 	"FORD",
+		"HIREDATE": "Dec 3, 1981 12:00:00 AM",
+		"JOB":  	"ANALYST",
+		"SAL":  	"3000",
+		"DEPTNO": 	20
+	},
+	{	
+		"EMPNO": 	7934,	
+		"ENAME": 	"MILLER",
+		"HIREDATE": "Dec 3, 1981 12:00:00 AM",
+		"JOB":  	"CLERK",
+		"SAL":  	"1300",
+		"DEPTNO": 	10
+	}
+]

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>guguDanprint</title>
+<script type="text/javascript">
+	function account(p_start,p_end) {//p_end.value
+		alert("구구단 출력");
+			document.write("구구단 출력화면")
+			document.write("<table border='1' width='300px' height='250px'>")
+			//여기는 javascript의 영역에 태그를 쓴다. 하지만 그냥 쓸수가 없다. 왜냐하면 javascript영역이기 때문이다.
+			document.write("<br>")
+			for(var i=p_start;i<=p_end;i++){
+				for(var j=1;j<10;j++){
+				document.write(i+"*"+j+"="+i*j)
+				document.write("<br>")
+				}
+			}
+			
+			document.write("</table>")
+	}
+</script>
+</head>
+<body>
+<script type="text/javascript">
+	document.write("<h1>for문을 활용한 구구단 출력하기</h1>");
+</script>
+<!-- 여기는 html의 영역이다. 그래서 document.write()를 쓰면 안된다. -->
+<form id="f_guguDan" name="f_guguDan">
+시작단 : <input type="text" name="txtStart"><br>
+끝단 : <input type="text" name="txtEnd"><br>
+<button id="btn_print" onClick="javascript:account(document.f_guguDan.txtStart.value, document.f_guguDan.txtEnd.value)">구구단 출력하기</button> <!-- javascript에 java의 함수를 쓸수 있다. -->
+
+</form>
+</body>
+</html>

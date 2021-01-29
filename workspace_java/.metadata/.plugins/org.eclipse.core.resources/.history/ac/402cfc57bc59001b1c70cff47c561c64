@@ -1,0 +1,18 @@
+package np.com.util;
+
+import java.util.List;
+import java.util.Map;
+
+public class KakaoDao {
+
+	public static KakaoDao getInstance() {
+		
+		return instanceDao;
+	}
+
+	public Map<String, Object> Login(Map<String, Object> pmap) {
+		
+		return null;
+	}
+
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.ZdoMapper">
+ <select id="getZdo" parameterType="map" resultType="java.util.Map">
+	SELECT '전체' zdo FROM dual
+	UNION ALL
+	SELECT zdo
+		FROM (SELECT distinct(zdo) zdo
+				FROM zipcode_t
+				ORDER BY zdo asc) 
+ </select>
+ <select id="getAddressList" parameterType="map" resultType="Map">
+	select zipcode, address from zipcode_t
+	<where>
+		<if test="zdo != null and zdo.length()>0">
+			AND zdo = #{zdo} <!-- AND를 생략하더라도 실행이 된다. 하지만 명시적인 표현식을 원칙으로 써준다. -->
+		</if>
+		<if test="dong != null">
+			AND dong like '%'||#{dong}||'%'
+		</if>
+	</where>
+ </select>
+</mapper>

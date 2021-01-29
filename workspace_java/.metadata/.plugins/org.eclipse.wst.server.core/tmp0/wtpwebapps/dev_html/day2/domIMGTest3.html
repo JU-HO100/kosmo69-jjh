@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript">
+	function init() {
+		//이런 방법으로 태그를 생성할 수 있으므로 js기반의 UI솔루션이 가능하다.
+		var img = document.createElement("img");
+		var img2 = document.createElement('DIV');
+		img.setAttribute("src","../images/mu4.jpg");
+		img.setAttribute("width",400);
+		document.body.appendChild(img);
+
+	}
+	<div style="width:30%; height:30%; border:1px solid ;">
+	</div>
+	<div style="width:30%; height:30%; border:1px solid green;">
+	</div>
+</script>
+</head>
+<body onload="init()">
+<hr>
+<img alt="무" src="http://192.168.0.38:9000/images/mu6.gif"
+	 border="1"
+	 width="30%"
+	 height="30%"/>
+</body>
+</html>

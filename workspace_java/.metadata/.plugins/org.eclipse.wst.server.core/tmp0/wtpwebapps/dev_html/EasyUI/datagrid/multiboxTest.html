@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>패턴분석</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+		var g_gubun="";
+	</script>
+	<style type="text/css">
+		#d_msg {
+			border: 3px solid gold;
+			width: 200px;
+			height: 80px;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#tb_name').textbox('setValue','테스트');
+			$('#tb_name').textbox({
+				icons: [{
+					iconCls:'icon-search',
+					handler: function(e){//이벤트가 발동이되었을 때 - 진행이 된다.
+						  $(e.data.target).textbox('setValue', 'Something added!');
+					}//////////////////////////// end of handler
+			}]/////////////////////////////// end of icons
+			});////////////////////////////// end of name ///////////////////////////////////////
+			$("#cb_search").combobox({
+				data: [
+				 {code:1, subject:'java'}
+				,{code:2, subject:'html', selected:true}
+				,{code:3, subject:'javascript'}
+				,{code:4, subject:'css'}
+				]
+				,onChange:function(){
+					g_gubun = $("#cb_search").combobox('getValue');
+					alert("g_gubun : "+g_gubun);//여기서 찍히는 값이 무엇일까?
+				}
+// 				url:'../cbsample.json' //이렇게 하면 상수가 된다. 정적이다 -XXX.jsp or XXX.do()로 해야 동적으로 바뀐다.
+			});
+		});////////////////////////////////// end of ready //////////////////////////////////////
+	</script>
+	<input id="tb_name" class="easyui-textbox">
+	<br>
+	<input id="cb_search" class="easyui-combobox" name="cb_search"
+		data-options="valueField:'code',textField:'subject">
+</body>
+</html>

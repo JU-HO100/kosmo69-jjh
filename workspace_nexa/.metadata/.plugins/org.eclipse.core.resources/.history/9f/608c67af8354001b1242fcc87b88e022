@@ -1,0 +1,8 @@
+package com.kosmo.nexa;
+
+import org.slf4j.Logger;
+
+//@Controler
+public class DeptController {
+	Logger logger = Logger.getLogger(DeptCotroller.class);
+}

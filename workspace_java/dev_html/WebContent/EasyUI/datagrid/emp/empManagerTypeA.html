@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>사원관리(empManagerAType.html)</title>
+<!-- 공통코드 추가 시작 
+나중에는 이것들을 include를 사용해서 한 줄 추가로 하면 좋을거 같아요.
+-->
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+    <style type="text/css">
+        
+       #d_msg {
+          border: 5px solid orange;
+          width: 700px;
+          height: 120px;
+       }
+    </style>
+<!-- 공통코드 추가   끝  -->
+   <script type="text/javascript">
+       var v_date;//사용자가 선택한 날짜 정보를 담을 변수 선언.
+      //너 조회할거야?
+      function empList(){
+         $("#d_msg").append("empList호출 성공<br>");
+         $("#dg_emp").datagrid({
+            url: "../emp.json"/* 서버의 이전이나 소스의 재사용성을 고려하여 상대경로로 작성할것. */   
+         });
+      }                  
+   </script>
+</head>
+<body>
+<script type="text/javascript">   
+   $(document).ready(function (){
+      
+   });
+</script>
+<!-- 이 페이지에 대한 에러 메시지나 힌트문을 출력하자. -->
+<div id="d_msg"></div>
+<table id="dg_emp" class="esayui-datagrid" data-options="url:'../emp.json'" width="950px" title="사원관리">
+ <thead>
+	<tr>
+		<th data-options="field:'EMPNO', align:'center', width:100">사원번호</th><!-- 가운대정렬(easyui에선 의미가없다) -->
+		<th data-options="field:'DEPTNO', align:'center', width:200,
+			formatter: function(value,row){
+				return row.DNAME;
+				},
+			editor:{
+				type: 'combobox'
+				,options:{
+					valueField:'DEPTNO'
+					,textField:'DNAME'
+					,method:'get'
+					,url:'../dept.json'
+				}
+			}
+		">부서번호</th>
+	</tr>
+ </thead>
+</table>
+</body>
+</html>
+
+
+

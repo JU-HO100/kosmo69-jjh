@@ -1,0 +1,36 @@
+package np.com.controller;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+public class kakaoController implements Action {
+
+	@Override
+	public ModelAndView execute(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		Logger logger = Logger.getLogger(kakaoController.class);
+		ModelAndView mav = new ModelAndView(req, res);
+		KakaoDao kDao = KakaoDao.getInstance();
+		
+		else if(pageName.equals("kakaoLogin")) {
+			List<Map<String, Object>> list = kDao.Login(pmap);
+			for(Map<String,Object> map:list) {
+				if(map.get("MSG") == null) {
+					session.setAttribute("id", map.get("M_ID"));
+					session.setAttribute("nick", map.get("M_NICK"));
+					session.setMaxInactiveInterval(300);//세션유지시간 30분
+					pageName="index"; // 로그인 됐을때 보낼 페이지
+				}
+			}
+		}
+		return mav;
+	}
+	
+
+}

@@ -1,0 +1,15 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	session.invalidate();
+%>
+<script>
+	var deleteCookie = function(name) {
+	    document.cookie = name + '=; expires=Thu, 01 Jan 1999 00:00:10 GMT;';
+	}
+	// deleteCookie(변수이름)
+	deleteCookie('name');
+</script>
+<%
+	response.sendRedirect("./index.jsp");
+%>

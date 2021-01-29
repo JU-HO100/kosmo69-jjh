@@ -1,0 +1,34 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%@ page import="java.util.*" %>
+<%
+	//response.setIntHeader("Refresh",5);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<div id="kakao-login-btn"></div>
+<!-- <div id="d_test">d_test</div> -->
+<script type='text/javascript'>
+	//사용할 앱의 JavaScript 키를 설정하기
+	Kakao.init('');
+	
+	
+	
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<a href="http://developers.kakao.com/logout"></a>
+
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

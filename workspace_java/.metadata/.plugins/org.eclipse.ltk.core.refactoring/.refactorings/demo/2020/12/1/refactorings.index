@@ -1,0 +1,21 @@
+1609029395551	Move compilation units
+1609029405362	Rename type 'BoardController'
+1609029414167	Rename type 'BoardLogic'
+1609029434347	Rename type 'SqlBoardDDao'
+1609029593691	Copy compilation units
+1609029610973	Rename type 'SqlRecipeDDao'
+1609029638222	Rename type 'RecipeLogic'
+1609029739792	Rename type 'RecipeController'
+1609029767826	Copy compilation unit
+1609029908578	Rename type 'SqlBoardMDao'
+1609044021196	Delete element
+1609044042326	Rename type 'SqlRecipeMDao'
+1609289575268	Copy file
+1609290224958	Delete element
+1609380255226	Delete element
+1609380882650	Move 'boardList.jsp' to 'common'
+1609381048458	Move 'boardList.jsp' to 'board'
+1609382440371	Rename resource 'easyui_common.jsp'
+1609383822030	Rename resource 'common.js'
+1609383828894	Rename resource '0.js'
+1609385108637	Delete element

@@ -1,0 +1,34 @@
+package mvc2.online;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+public class TestController implements Controller {
+	Logger logger = Logger.getLogger(TestController.class);
+	String requestName = null;// login/memberList.sp2 -> memberList가 담긴다
+	public TestController(String requestName) {
+		logger.info("TestController 호출");
+		this.requestName = requestName;//응답페이지의 이름
+	}
+
+	@Override
+	public ModelAndView execute(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.info("execute 호출");
+		List<Map<String,Object>> testList = new ArrayList<>();
+		ModelAndView mav = new ModelAndView(request, response);
+		mav.addObject("testList", testList);// 닮은꼴 = req(session).setAttribute("deptList", deptList); 
+		mav.setViewName(requestName+".html");// WEB-INF/views/[[dept/deptList]].jsp
+//		mav.setViewName("onLineTest.jsp");// WEB-INF/views/[[dept/deptList]].jsp
+		return mav;
+	}
+
+}

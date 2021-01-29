@@ -1,0 +1,13 @@
+package com.mycompary.online;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class ListMainApp {
+
+	public static void main(String[] args) {
+		ApplicationContext context = 
+				new ClassPathXmlApplicationContext("scr\\com\\mycompany\\online\\insaBean.xml");
+	
+	}
+}

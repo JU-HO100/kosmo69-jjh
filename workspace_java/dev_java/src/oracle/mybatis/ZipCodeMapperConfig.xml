@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd"><!-- xml파일의 명세서 -->
+<configuration>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver"
+					value="oracle.jdbc.driver.OracleDriver" />
+				<property name="url"
+					value="jdbc:oracle:thin:@192.168.0.38:1521:orcl11" />
+				<property name="username" value="scott" />
+				<property name="password" value="tiger" />
+			</dataSource>
+		</environment>
+		<!-- <environment id="development3"> <transactionManager type="JDBC"/> 
+			<dataSource type="POOLED"> <property name="driver" value="com.mysql.jdbc.Driver"/> 
+			<property name="url" value="jdbc:mysql://127.0.0.1:3306/test"/> <property 
+			name="username" value="abc"/> <property name="password" value="123"/> </dataSource> 
+			</environment> -->
+	</environments>
+	<mappers>
+		<mapper resource="oracle/mybatis/dept.xml" />
+		<mapper resource="oracle/mybatis/emp.xml" />
+		<mapper resource="oracle/mybatis/zipcode.xml" />
+	</mappers>
+</configuration>

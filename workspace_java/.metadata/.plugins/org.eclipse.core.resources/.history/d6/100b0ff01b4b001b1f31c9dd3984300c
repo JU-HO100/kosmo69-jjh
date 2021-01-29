@@ -1,0 +1,25 @@
+package com.example.demo;
+
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+//DAO = Data Access Object 디자인 패턴이다.
+@Service
+public class SqlBoardDDao {
+	Logger logger = LogManager.getLogger(SqlBoardDDao.class);
+	
+	@Autowired
+	private SqlSessionTemplate sqlSessionTemplate = null;
+	public int boardDInsert(Map<String, Object> pmap) {
+		logger.info("DDao boardDInsert 호출"+pmap);
+		int result = 0;
+		result = sqlSessionTemplate.selectOne("boardInsert",pmap);
+		logger.info(result);
+		return result;
+	}
+	
+}	

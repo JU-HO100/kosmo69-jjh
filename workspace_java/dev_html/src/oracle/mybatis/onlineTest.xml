@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.OnLineTestMapper">
+	<resultMap id="swDVO" type="com.vo.SwDesignVO"/>
+   <select id="subjectList" parameterType="Map" resultType="Map">
+      select sub_cd, sub_name from sub_table
+   </select>
+   <select id="swDesignExam" parameterType="java.util.Map" statementType="CALLABLE">
+   			{ call proc_swdesign(#{key, jdbcType=CURSOR, mode=OUT
+   			, javaType=java.sql.ResultSet, resultMap=swDVO})}
+   </select>
+   <select id="isOk" parameterType="map" resultType="String">
+   		SELECT NVL((SELECT '승인' FROM take_examination
+                   WHERE mem_id = #{mem_id}
+                     AND exam_no=#{exam_no}), '응시불가') isOk FROM dual
+   </select>
+   
+</mapper>

@@ -1,0 +1,7 @@
+INDEX VERSION 1.4+C:\workspace_nexa\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+2855374977.index
+2897228883.index
+3658565632.index
+3422955766.index
+134125111.index
+2549354073.index

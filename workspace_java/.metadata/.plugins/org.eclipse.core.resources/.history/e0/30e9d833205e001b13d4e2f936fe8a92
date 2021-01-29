@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+// 	String zipcode = request.getParameter("c_map");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>구글 맵</title>
+<script type="text/javascript"src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRe0llytjxGZ9jki5PwDfjiZdM0PL7_no&callback=initMap&libraries=&v=weekly"defer></script>
+</head>
+<body>
+	<!-- services 라이브러리 불러오기 -->
+	<script type="text/javascript">
+	var map;/* 객체도 var이다. 예)var myCar = new sonata(); */
+	var marker;
+//		var imsi='';
+	$(document).ready(function() {
+		map = new google.maps.Map(document.getElementById("map"), {//Map 브라우저에서 제공하는 객체
+			center : { lat: 37.478828, lng: 126.878616 },
+			zoom : 16,
+		});
+		var infowindow = new google.maps.InfoWindow();
+		$.ajax({/* ajax:Object 화면의 일부분만 바꾼다.넘긴다 */
+			url:'jsonShopInfo.jsp'
+			,dataType:'json'
+			,success:function(data){
+				var result = JSON.stringify(data);
+				$("#d_display").append(result);
+				var jsonDoc = JSON.parse(result);/* parse안에 String이 들어간다. */
+				for(var i=0;i<jsonDoc.length;i++){
+//							alert(jsonDoc[i].loc);
+					marker = new google.maps.Marker({
+						id: i
+						,position: new google.maps.LatLng(lat, lng)
+						,map : map
+						,title: jsonDoc
+				});
+				google.maps.event.addListener(marker,'click',(function(marker,i){
+					return function(){
+						infowindow.setContent('<b>이름:</b>'+jsonDoc[i].loc
+								+'<br><a href=https://www.youtube.com/c/hahahaYouTube>hahaha</a><br><img src=../../images/mu6.gif width=100 height=70>');
+						infowindow.open(map,marker);
+					}
+				})(marker,i));/* jquery에서 이벤트는 on이 다 빠져나간다 */					
+				if(marker){
+					marker.addListener('click', function(){
+						map.setZoom(15);
+						map.setCenter(this.getPosition());
+					});	
+				}
+			}
+			}
+		});///////////////// end of ajax
+	});
+</script>
+<div id="map"></div>
+</body>
+</html>

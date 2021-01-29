@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" scr="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+var jq2 = $.noConflict();
+	function(){
+		alert(jq2("#mem_id").val());//똑같은 제이쿼리 중에서 버전에 따라 구분해서 사용가능. 양쪽을 다 써야할 경우도 있다.
+	}	
+</script>
+<script type="text/javascript" scr="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+		var g_id=null;//전역변수
+		var g_id2;//전역변수
+		//제이쿼리 버전에 따라서 충돌없이 양쪽 버전을 모두 사용하고 싶을 때
+		//다른언어에서도 $기호를 쓰다보니 서로 충돌이 발생하기도 함. 예)jQuery:easyUI
+		var jq1 = $.noConflict();
+	function move(p_id){
+		alert("p_id : "+p_id+" g_id : "+g_id+" g_id2 : "+g_id2);
+// 		location.href="move.jsp?mem_id"+p_id;
+		}
+	function newWinTest(){
+		alert(jq1("#mem_id").val());
+// 		  newWin=window.open('jQueryMember.html','jQueryMember.html','toolbar=no,scrollbars=no,top=200,left=300,width=800,height=800');
+		  newWin=window.open('jQueryMember.html','_self');
+// 		  var str='새창 열기/닫기 예제<BR><BR>';
+// 		  str+='<CENTER><INPUT type=button value="닫기" onClick="window.close()"></CENTER>';
+// 		  newWin.document.write(str);
+		}
+</script>
+</head>
+<body>
+<script type="text/javascript">
+	window.onload = function(){
+		g_id = document.getElementById("mem_id").value;
+		alert("g_id:"+g_id);//haha
+	};
+	$(document).ready(function(){
+		g_id2 = $("#mem_id").val();
+		alert("g_id2:"+g_id2);//haha
+	});
+</script>
+<form action="f">
+<input type="text" id="mem_id" name="mem_id" value="haha">
+<!-- <a href="move.jsp?mem_id=?">이동</a>페이지 이동도 가능하지만 함수 호출도 가능하다. -->
+<!-- <a href="javascript:move(document.f.mem_id.value)">이동</a>페이지 이동도 가능하지만 함수 호출도 가능하다. -->
+<a href="javascript:window.location.href='move.jsp'">이동</a><!-- location앞에 상위객체 window가 있다. 그래서 페이지를 이동할때 location 앞에 window를 써야한다.   -->
+<FORM><INPUT type="button" value="새창 열기" onClick="newWinTest()"></FORM><!-- location앞에 상위객체 window가 있다. 그래서 페이지를 이동할때 location 앞에 window를 써야한다.   -->
+</form>
+</body>
+</html>

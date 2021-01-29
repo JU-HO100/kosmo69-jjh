@@ -1,0 +1,14 @@
+package np.com.controller;
+
+import javax.swing.text.View;
+
+public class SinginController {
+	
+	
+	
+	{
+		  "client_id": "앱 고유의 API 키",
+		  "redirect_uri`: "요청 후 콜백주소", //이 주소의 파라메터로 code 값이 반환된다. 테스트에서는 내부 서버를 돌려 http://localhost:9000로 설정할 수 있다.
+		}
+
+}

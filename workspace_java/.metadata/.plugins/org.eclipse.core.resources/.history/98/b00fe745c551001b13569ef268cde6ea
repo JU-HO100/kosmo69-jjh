@@ -1,0 +1,32 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인 Test</title>
+<script src = "//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<!-- 카카오 로그인 -->
+<script type="text/javascript" src="/WebContent/kakaoAPI/kakao.js"></script>
+<!-- 네이버 로그인 -->
+<script type="text/javascript" src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.0.js" charset="utf-8"></script>
+
+</head>
+<body>
+	<a href="#" id="login"> Login </a>
+	<hr> <!-- Google Login Btn --> 
+	<div class="g-signin2" style="max-width:400px;max-height:60px" 
+		data-onsuccess="onSignIn" data-theme="dark" data-width="auto" data-height="60">
+	</div> <!-- Naver Login Btn --> 
+	<div id="naverIdLogin" > 
+		<a id="naverIdLogin_loginButton"> 
+		<img src="https://static.nid.naver.com/oauth/big_g.PNG?version=js-2.0.0" width="100%" height="auto" style="max-width:400px;max-height:60px"/> 
+		</a> 
+	</div> <!-- KaKao Login Btn --> 
+	<a id="login-form-btn" href="javascript:loginFormWithKakao()"> 
+		<img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="100%" height="auto" style="max-width:400px;max-height:60px"/> 
+	</a>
+
+
+</body>
+</html>

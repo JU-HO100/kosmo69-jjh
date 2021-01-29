@@ -1,0 +1,7 @@
+package np.com.util;
+
+import np.com.controller.Action;
+
+public class KakaoLogin implements Action{
+
+}

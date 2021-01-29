@@ -1,0 +1,46 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%@ page import="java.util.*" %>
+<%
+	//response.setIntHeader("Refresh",5);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<div id="kakao-login-btn"></div>
+<!-- <div id="d_test">d_test</div> -->
+<script type='text/javascript'>
+	//사용할 앱의 JavaScript 키를 설정하기
+	Kakao.init('15f5287d753e527b86e1f231f7128313');
+	//카카오 로그인 버튼을 생성하기
+	Kakao.Auth.createLoginButton(){
+		container: '#kakao-login-btn',
+		success: function(authObj) {
+//     	alert(JSON.stringify(authObj));
+			Kakao.API.request({
+	 	    url: '/v2/user/me',
+	 	    success: function(res) {
+				
+	 	    	
+	 	    	
+	 	    }
+		}
+	}
+	
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<a href="http://developers.kakao.com/logout"></a>
+
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

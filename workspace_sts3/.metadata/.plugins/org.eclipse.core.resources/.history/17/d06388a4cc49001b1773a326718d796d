@@ -1,0 +1,23 @@
+package np.com.member;
+
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.stereotype.Service;
+//DAO:Data Access Object 디자인패턴
+@Service
+public class SqlMemDDao {
+	Logger logger = Logger.getLogger(SqlMemDDao.class);
+	private SqlSessionTemplate sqlSessionTemplate = null;
+	public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
+		this.sqlSessionTemplate = sqlSessionTemplate;
+	}
+	public int boardDInsert(Map<String, Object> pMap) {
+		logger.info("boardDInsert 호출 성공"+pMap);
+		int result = 0;
+		result = sqlSessionTemplate.insert("boardDInsert",pMap);
+		logger.info(result);
+		return result;
+	}
+}

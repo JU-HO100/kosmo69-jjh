@@ -1,0 +1,29 @@
+<%@ page language="java" contentType="application/json; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*, java.util.*"%>
+<%@ page import="com.google.gson.Gson"%>
+<%@ page import="web.mvc.ZipCodeDao"%>
+<%
+	String cols = request.getParameter("cols");//empno, ename, sal
+String keyword = request.getParameter("keyword");//사용자가 입력한 값
+Map<String,Object> pmap = new HashMap<>();
+if (cols != null) {
+	if ("empno".equals(cols)) {
+		pmap.put("uempno", "empno");
+	} else if ("ename".equals(cols)) {
+		pmap.put("uename", "ename");
+	} else if ("sal".equals(cols)) {
+		pmap.put("usal", "sal");
+	}
+}
+if (keyword != null) {
+	pmap.put("keyword", keyword);//7566 or SMITH or 3000
+}
+StringBuilder sql = new StringBuilder();
+EmpDao dDao = new EmpDao();
+List<Map<String,Object>> zipcodeList = dDao.getZipCodeList(pmap);
+Gson g = new Gson();
+String imsi = g.toJson(zipcodeList);
+out.print(imsi);
+//out.print(empList);
+%>

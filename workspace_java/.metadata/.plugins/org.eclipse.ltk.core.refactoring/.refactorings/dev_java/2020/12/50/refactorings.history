@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 4 elements to &apos;dev_html/src/mvc2.online&apos;&#x0D;&#x0A;- Original project: &apos;dev_java&apos;&#x0D;&#x0A;- Destination element: &apos;dev_html/src/mvc2.online&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     com.util.DBConnectionMgr.java&#x0D;&#x0A;     com.util.MyBatisCommonFactory.java&#x0D;&#x0A;     config.properties&#x0D;&#x0A;     Configration.xml" description="Copy elements" destination="=dev_html/src&lt;mvc2.online" element1="src/com/util/config.properties" element2="src/com/util/Configration.xml" element3="/src&lt;com.util{DBConnectionMgr.java" element4="/src&lt;com.util{MyBatisCommonFactory.java" files="2" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1607303918023" units="2" version="1.0"/>
+</session>

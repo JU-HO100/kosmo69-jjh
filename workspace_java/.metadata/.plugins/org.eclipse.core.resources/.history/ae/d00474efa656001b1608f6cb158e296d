@@ -1,0 +1,16 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	session.invalidate();
+%>
+<script>
+	var user = "http://192.168.0.38:9000";
+	var deleteCookie = function(user) {
+	    document.cookie = user;
+	}
+	// deleteCookie(변수이름)
+	deleteCookie('name');
+</script>
+<%
+	response.sendRedirect("./index.jsp");
+%>

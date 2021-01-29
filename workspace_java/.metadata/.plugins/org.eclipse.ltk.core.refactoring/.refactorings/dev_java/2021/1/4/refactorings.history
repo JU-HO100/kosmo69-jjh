@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 2 elements to &apos;nullpointer/src/main/java/np.com.api&apos;&#x0D;&#x0A;- Original project: &apos;dev_java&apos;&#x0D;&#x0A;- Destination element: &apos;nullpointer/src/main/java/np.com.api&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     naver.net.ApiExamCaptchaNkeyResult.java&#x0D;&#x0A;     naver.net.NaverCaptcharTest3.java" description="Copy compilation units" destination="=nullpointer/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;np.com.api" element1="/src&lt;naver.net{ApiExamCaptchaNkeyResult.java" element2="/src&lt;naver.net{NaverCaptcharTest3.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1611151313014" units="2" version="1.0"/>
+</session>

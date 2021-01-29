@@ -1,0 +1,3 @@
+ ccv.sd_display.insertString(ccv.sd_display.getLength()
+		                		  					,nickName+"¥‘¿Ã"+otherName+"¥‘ø°∞‘"+message+"\n"
+		                		  					, new SimpleAttributeSet());

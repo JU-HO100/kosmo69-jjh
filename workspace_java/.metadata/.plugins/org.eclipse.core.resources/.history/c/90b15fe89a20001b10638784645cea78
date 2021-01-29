@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.ZipCodeMapper">
+	<select id="getZipCodeList" parameterType="map" resultType="map">
+		SELECT zipcode, zdo, dong, address
+		  FROM zipcode_t
+		 <where>
+		 	<if test='uaddress !=null and address.length>0'>
+		 		and address LIKE '%'||#{value}||'%'
+		 	</if>
+		 </where>
+	</select>
+	<select id="getZipCodeList2" parameterType="java.lang.String" resultType="web.mvc.ZipCodeVO"><!-- map,web.mvc.vo -->
+		SELECT zipcode, zdo, dong, address
+		  FROM zipcode_t
+		 <where>
+		 	<if test='dong !=null and dong.length>0'>
+		 		and address LIKE '%'||#{value}||'%'
+		 	</if>
+		 </where>
+	</select>
+</mapper>
+

@@ -1,0 +1,195 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%
+	//response.setIntHeader("Refresh",5);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<div id="kakao-login-btn"></div>
+<!-- <div id="d_test">d_test</div> -->
+<script type='text/javascript'>
+	var kakaoNick = "";
+	var kakaoMail = "";
+//     <![CDATA[
+   // 사용할 앱의 JavaScript 키를 설정해 주세요.
+   Kakao.init('f61c36ee28b1fe4d00e270bcf75d344d');
+   
+   // 카카오 로그인 버튼을 생성합니다.
+   Kakao.Auth.createLoginButton({
+     container: '#kakao-login-btn',
+     success: function(authObj) {
+//     	alert(JSON.stringify(authObj));
+
+    	// 세션이 종료된 이후에도 토큰을 유지.
+		persistAccessToken: true,
+		// 세션이 종료된 이후에도 refresh토큰을 유지.
+// 		persistRefreshToken: true,
+		
+//     	로그인 성공시, API를 호출합니다.
+    	Kakao.API.request({
+	 	    url: '/v2/user/me',
+	 	    success: function(response) {
+    	    var user = response.kakao_account //계정 정보
+//     	    user.host = 'kakao'
+    	    kakaoMail = response.kaccount_email;   //유저의 이메일
+    	    kakaoNick = response.properties.nickname; //유저가 등록한 별명
+    	    kakao_Nick = profile_json.get("id") 
+//  			alert("이름 : "+kakaoNick); //로그인한 유저 이름
+//     	    session.setAttribute("email",kakaoMail);
+//     	    sessionStorage.setItem("email",kakaoMail);
+// 			session.setAttribute("kakaoNick",kakaoNick);
+//     	    sessionStorage.setItem("kakaoNick",kakaoNick);
+    	    
+    	    },
+    	    fail: function(error) {
+    	        alert("에러1"+JSON.stringify(error));
+    	    }
+    	});
+
+ 	
+//      		Kakao.Auth.authorize({
+// 				redirectUri: 'http://192.168.0.38:8000/member/index.np?kakaoNick='+kakaoNick
+// 				redirectUri: 'http://192.168.0.38:8000/member/index.np'
+// 			});
+
+    	  },
+    	  fail: function(err) {
+    	  	alert("에러2"+JSON.stringify(err));//카카오개발자홈피에 등록이 되지 않았을때 자주 나타남
+    	  	
+    	  }
+    });
+   
+   /* ================================================ 카카오 사용자 정보 받기 ============================================================= */
+   
+	// routes/auth/kakao.js
+/**
+ * @summary 사용자 계정을 provider 로 연동. 인증 정보와 함께 저장
+ *
+ * @param {*} session 사용자 세션
+ * @param {*} provider 공급사
+ * @param {*} authData 인증 정보
+ */
+function linkUser(session, provider, authData) {
+  let result = false;
+  if (session.authData) {
+    if (session.authData[provider]) {
+      // 이미 계정에 provider 가 연결되어 있는 경우
+      return result;
+    }
+
+    session.authData[provider] = authData;
+  } else {
+    session.authData = {
+      [provider]: authData
+    };
+  }
+
+  result = true;
+
+  return result;
+}
+
+/**
+ * 
+ * @summary '사용자 서비스 동의' 완료 후, 이동되는 주소.
+ *
+ * @description
+ * - 사용자로부터 동의를 구한 후, 서비스 내에서 처리할 로직을 구현합니다.
+ */
+
+	// http://192.168.0.38:8000/kakaoLogin.jsp
+	router.get("/callback", async (req, res) => {
+	const { session, query } = req;
+	const { code } = query;
+	
+		console.info("==== session ====");
+		console.log(session);
+		
+		let tokenResponse;
+		try {
+		  // Authorization Server 부터 Access token 발급받기
+		  tokenResponse = await axios({
+		    method: "POST",
+		    url: 'https://kauth.kakao.com/oauth/token',
+		    headers: {
+		      "content-type": "application/x-www-form-urlencoded"
+		    },
+		    data: qs.stringify({
+		      grant_type: "authorization_code",
+		      client_id: "f61c36ee28b1fe4d00e270bcf75d344d",
+		      client_secret: "LFtOmxJX0vZ7CyY2QPwkWjZTqu3CCZbt",
+		      redirect_uri: "http://192.168.0.38:8000/member/index.jsp",
+		      code
+		    })
+		  });
+		} catch (error) {
+		  return res.json(error.data);
+		}
+		
+		console.info("==== tokenResponse.data ====");
+		console.log(tokenResponse.data);
+		
+		const { access_token } = tokenResponse.data;
+		
+		let userResponse;
+		try {
+		  // access_token 으로 사용자 정보 요청하기
+		  userResponse = await axios({
+		    method: "GET",
+		    url: "https://kapi.kakao.com/v2/user/me",
+		    headers: {
+		      Authorization: `Bearer ${access_token}`
+		    }
+		  });
+		} catch (error) {
+		  return res.json(error.data);
+		}
+		
+		console.info("==== userResponse.data ====");
+		console.log(userResponse.data);
+		
+		const authData = {
+		  ...tokenResponse.data,
+		  ...userResponse.data
+		};
+		
+		const result = linkUser(session, "kakao", authData);
+		
+		if (result) {
+		  console.info("계정에 연결되었습니다.");
+		} else {
+		  console.warn("이미 연결된 계정입니다.");
+		}
+	
+	  res.redirect("/");
+	});
+	 
+	 /* ================================================ 카카오 사용자 정보 받기 ============================================================= */
+   
+//   	alert("ajax test");	
+	$.ajax({
+		url:'../a.jsp?s_name='+kakaoNick
+       ,success:function(data){
+    	   alert("data:"+data);
+//     	   $("#d_test").text(data);
+       }
+	});
+	
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<a href="http://developers.kakao.com/logout"></a>
+
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

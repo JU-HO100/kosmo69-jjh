@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		var imsi='';
+		$(document).ready(function(){
+			$.ajax({/* ajax:Object 화면의 일부분만 바꾼다.넘긴다 */
+				url:'jsonShopInfo.jsp'
+				,dataType:'json'
+				,success:function(data){
+// 					alert(data);
+// 					$("#d_display").append(data);
+					//넘어온 값을 JSON형식으로 처리해 준다.
+					var result = JSON.stringify(data);
+// 					$("#d_display").append(result);
+					//그 값을 배열객체로 접근 할 수 있도록 해준다.
+					var jsonDoc = JSON.parse(result);/* parse안에 String이 들어간다. */
+					for(var i=0;i<jsonDoc.length;i++){
+// 						alert(jsonDoc[i].loc);
+						imsi += jsonDoc[i].loc+"|";
+					}
+						$("#d_display").html(imsi)
+				}
+			});///////////////// end of ajax
+		});////////////////end of ready
+	</script>
+	<div id="d_display"></div>
+</body>
+</html>
+

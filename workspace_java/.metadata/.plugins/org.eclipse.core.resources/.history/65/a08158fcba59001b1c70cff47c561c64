@@ -1,0 +1,23 @@
+package np.com.util;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import np.com.controller.Action;
+import np.com.controller.ModelAndView;
+
+public class KakaoLogin implements Action{
+
+	@Override
+	public ModelAndView execute(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		
+		
+		
+		
+		return null;
+	}
+
+}

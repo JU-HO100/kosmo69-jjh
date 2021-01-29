@@ -1,0 +1,11 @@
+package com.mvc.dept;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class DeptLogic {
+	
+	public List<Map<String,Object>> deptList(){
+		
+	}
+}

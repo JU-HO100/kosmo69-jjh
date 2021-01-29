@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%@ page import="java.util.*" %>
+<%
+	//response.setIntHeader("Refresh",5);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<div id="kakao-login-btn"></div>
+
+<!-- 카카오 로그인 -->
+<script type='text/javascript'>
+	//사용할 앱의 JavaScript 키를 설정하기
+	Kakao.init('15f5287d753e527b86e1f231f7128313');
+	//카카오 로그인 버튼을 생성하기
+	Kakao.Auth.createLoginButton({
+		container: '#kakao-login-btn',
+		success: function(authObj) {
+//     	alert(JSON.stringify(authObj));
+			//로그인 성공시 
+			Kakao.API.request({
+	 	    url: '/v2/user/me',
+	 	    success: function(res) {
+// 				alert(res.properties.nickname+'님 환영합니다.');
+				var user = res.properties;//유저 정보 담기
+ 				console.log(user);
+				//location.href="/loginOkHeader.jsp?kakaoNick="+res.properties.nickname;//변수에 담지 않고 호출해서 넣으면 보안이 좋아진다. loginOkHeader
+				location.href="/member/kakaoindex.jsp?kakaoNick="+res.properties.nickname;//index
+				
+	 	    },
+	 	    fail: function(error){
+	 	    	alert(JSON.stringify(error));	
+	 	    }
+	 	    });
+		},
+		fail: function(err){
+			alert(JSON.stringify(err));
+		}
+	});
+	//로그아웃
+// 	function logout(){
+// 		Kakao.Auth.logout(function () {
+// 			setTimeout(function(){
+// 				loction.href="http://192.168.0.38:8000/member/index.jsp"
+// 			},1000);//1초뒤에 로그아웃
+// 		});
+// 	}
+	
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<!-- <a href="http://developers.kakao.com/logout"></a> -->
+<!-- <input type="button" value="로그아웃" onclick="logout()"> -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

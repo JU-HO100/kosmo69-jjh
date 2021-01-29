@@ -1,0 +1,10 @@
+package np.com.util;
+
+public class KakaoDao {
+
+	public static KakaoDao getInstance() {
+		
+		return null;
+	}
+
+}

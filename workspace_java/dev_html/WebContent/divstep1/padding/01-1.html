@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>가변 패딩 적용하기</title>
+<!-- (가변 패딩을 적용할 패딩값 / 적용할 박스를 감싸고 있는 박스의 가로 너비)*100=가변값% -->
+<style type="text/css">
+	* {margin:0; padding:0;}
+	#wrap {
+		width: 90%;
+		height: 400px;
+		border: 4px solid black;
+		background: #DF7401;
+	}
+	/* padding의 앞에 있는값은 세로, 뒤에 있는 값은 가로의 여유or폭 값이다 */
+	#wrap p {
+		padding: 140px 4.5%; 
+		/* 40px/ 850=값 */
+	}
+</style>
+</head>
+<body>
+	<div id="wrap">
+		<p>
+		Lorem Ipsum은 단순히 인쇄 및 타자기 산업의 더미 텍스트입니다. Lorem Ipsum은 1500년대 부터 업계의 표준 더미 텍스트로
+		, 알 수 없는 프린터가 일종의 갤리를 가져와 서식 표본 책을 만들기 위해 스크램블링한 이래로 업계의 표준 더미 텍스트였습니다.
+		 그것은 5 세기뿐만 아니라 전자 타자로의 도약뿐만 아니라 본질적으로 변하지 않고 살아남았습니다.
+		  그것은 로렘 Ipsum 구절을 포함하는 Letraset 시트의 출시와 함께 1960 년대에 대중화되었다
+		  , 그리고 더 최근에 로렘 Ipsum의 버전을 포함하여 알두스 페이지 메이커와 같은 데스크톱 출판 소프트웨어와 함께.
+		</p>
+	</div>
+</body>
+</html>

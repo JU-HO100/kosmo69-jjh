@@ -1,0 +1,121 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<%@ include file="/common/bootstrap_common.jsp"%>
+<title>오늘 뭐 먹지?</title>
+<script src="/api/js/naveridlogin_js_sdk_2.0.0.js"></script>
+<script type="text/javascript">
+function loginAction() {
+	//아이디 공백 확인
+    if($("#id").val() == ""){
+      alert("아이디 입력바람");
+      $("#id").focus();
+      return false;
+    }
+	
+  //비밀번호 공백 확인
+    if($("#passwd").val() == ""){
+      alert("비밀번호를 입력해주세요");
+      $("#passwd").focus();
+      return false;
+    }
+	
+}
+function findIdAction() {
+	location.href="./findId.jsp";
+}
+function findPwAction() {
+	location.href="./findPw.jsp";
+}
+</script>
+</head>
+<body>
+<table align="center" style="width: 70% ; height: 100%;">
+	<tr>
+		<td>
+			<%@ include file="./loginHeader.jsp"%>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<%@ include file="./loginContent.jsp" %>
+		</td>	
+	</tr>
+	<tr>
+		<td align="center" style="padding-bottom: 8%">
+			<%@ include file="./kakaoLogin.jsp" %>
+		</td>		
+	</tr>
+	<tr>
+		<td>
+			<%@ include file="./footer.jsp" %>
+		</td>
+	</tr>	
+</table>
+
+
+<p>
+<div id="naverIdLogin"><a id="naverIdLogin_loginButton" href="#" role="button"><img src="https://static.nid.naver.com/oauth/big_g.PNG" width=320></a></div>
+<div style='display:none;'><a id="gnbLogin" href="#">Login</a></div>
+</p>
+<script type="text/javascript">
+var naverLogin = new naver.LoginWithNaverId(
+{
+	clientId: "mIXw97ATW2EK2AyaIVyq",
+	callbackUrl: "http://" + window.location.hostname + ((location.port==""||location.port==undefined)?"":":" + location.port) + "/api/member/Oauth_query2.asp",
+	isPopup: false,
+	loginButton: {color: "green", type: 3, height: 60}
+	}
+	);
+	/* (4) 네아로 로그인 정보를 초기화하기 위하여 init을 호출 */
+	naverLogin.init();
+	
+	/* (4-1) 임의의 링크를 설정해줄 필요가 있는 경우 */
+	$("#gnbLogin").attr("href", naverLogin.generateAuthorizeUrl());
+	
+	/* (5) 현재 로그인 상태를 확인 */
+	window.addEventListener('load', function () {
+	naverLogin.getLoginStatus(function (status) {
+	if (status) {
+	/* (6) 로그인 상태가 "true" 인 경우 로그인 버튼을 없애고 사용자 정보를 출력합니다. */
+	setLoginStatus();
+	}
+	});
+	});
+	
+	/* (6) 로그인 상태가 "true" 인 경우 로그인 버튼을 없애고 사용자 정보를 출력합니다. */
+	function setLoginStatus() {
+	var profileImage = naverLogin.user.getProfileImage();
+	var nickName = naverLogin.user.getNickName();
+	var email = naverLogin.user.getEmail();
+	var name = naverLogin.user.getName();
+	var birthday = naverLogin.user.getBirthday();
+	var uniqId = naverLogin.user.getId();
+	
+	$("#naverIdLogin_loginButton").html('<br><br><img src="' + profileImage + '" height=50 /> <p>' + name + '--' + nickName +'('+uniqId+ ')'+'('+email+ ')님 반갑습니다.</p>');
+	$("#gnbLogin").html("Logout");
+	$("#gnbLogin").attr("href", "#");
+	/* (7) 로그아웃 버튼을 설정하고 동작을 정의합니다. */
+	
+	$("#gnbLogin").click(function () {
+	naverLogin.logout();
+	document.location.reload();
+	});
+	
+	
+	/* 필수적으로 받아야하는 프로필 정보가 있다면 callback처리 시점에 체크 */
+	if( name == undefined || name == null ) {
+	alert("이름은 필수정보입니다. 정보제공을 동의해주세요.");
+	/* 사용자 정보 재동의를 위하여 다시 네아로 동의페이지로 이동함 */
+	naverLogin.reprompt();
+	return;
+	}
+	
+	}
+
+
+</script>
+</body>

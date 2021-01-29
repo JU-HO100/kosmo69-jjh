@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.EmpMapper">
+<!-- 
+ <select id="getJobSumList" parameterType="int" resultType="Map">
+SELECT sum(decode(job,'CLERK',sal,null)) clerk_sum
+         ,sum(decode(job,'SALESMAN',sal,null)) salesman_sum
+         ,sum(decode(job,'CLERK',null, 'SALESMAN',null,sal)) etc_sum
+     FROM emp
+SELECT sum(decode(job,'CLERK',sal,null)) clerk_sum
+         ,sum(decode(job,'SALESMAN',sal,null)) salesman_sum
+         ,sum(decode(job,'CLERK',null, 'SALESMAN',null,sal)) etc_sum
+     FROM emp
+</select>
+-->
+ <select id="getJobSumList" parameterType="int" resultType="Map"><!--Map은 자바에서 제공하는 API이다. 그래서 따로 주소값이 필요없다. -->  -->
+SELECT empno, ename, sal
+	
+FROM emp
+</select> 
+ 
+ <select id="getJobSumList2" parameterType="double" resultType="com.vo.EmpVO"> <!-- VO는 내가 만든 타입이다. 그래서 만든 주소값을 써야한다. -->
+SELECT sum(decode(job,'CLERK',sal,null)) clerk_sum
+         ,sum(decode(job,'SALESMAN',sal,null)) salesman_sum
+         ,sum(decode(job,'CLERK',null, 'SALESMAN',null,sal)) etc_sum
+     FROM emp
+</select>
+</mapper>
+

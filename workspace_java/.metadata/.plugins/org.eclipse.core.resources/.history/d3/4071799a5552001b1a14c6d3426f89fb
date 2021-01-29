@@ -1,0 +1,13 @@
+package np.com.controller;
+
+public class SinginController {
+	
+	
+	class KakaoSignInView(View):
+	    def get(self, request):
+	        client_id = KAKAO_KEY['KAKAO_KEY']
+	        redirect_uri = "http://127.0.0.1:8000/member/sign-in/kakao/callback"
+	        return redirect(
+	            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+	        )
+}

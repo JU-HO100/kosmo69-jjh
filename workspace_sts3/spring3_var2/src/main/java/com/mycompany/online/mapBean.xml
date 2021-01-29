@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+   xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+   <bean id="insaMap" class="com.mycompany.online.MapController">
+   		<property name="mapBean">
+   		<!-- List<String> listBean = new ArrayList<>(); listBean.add("Hi ~!"); -->
+   			<map>
+   				<entry>
+   					<key><value>prop1</value></key>
+   					<value>JAVA</value>
+   				</entry>
+   				<entry>
+   					<key><value>prop2</value></key>
+   					<value>JSP</value>
+   				</entry>
+   				<entry>
+   					<key><value>prop3</value></key>
+   					<value>ORACLE</value>
+   				</entry>
+   			</map>
+   		</property>
+   </bean>
+ </beans>

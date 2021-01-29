@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>basic.html-eaysUI-textBox</title>
+	<link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="https://www.jeasyui.com/easyui/demo/demo.css">
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script> <!-- min = 띄어쓰기와 들여쓰기를 안했다. -->
+    <script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+    	function test(){
+		$("#d_msg").text($("#emp_id").val()+", mem_id"+$("#mem_id").val());//html(); - innerHTML, innerText
+					 
+    	}
+    	function test2(){
+    		$.ajax({
+    			url:'basicAction.jsp'
+//     			,dataType:'json'
+    			,success:function(data){
+    				alert("data :"+data);
+//     				$("#mem_id").val(data);
+    				$("#_easyui_textbox_input1").val(data);
+    				$("#emp_id").val(data);
+    			},error:function(error){
+    				alert(error.responseTest);
+    			}
+    		});
+    	}
+    </script>
+</head>
+<body>
+<script type="text/javascript">
+	$(document).ready(function(){
+// 		document.getElementById("emp_id").value
+	});
+</script>
+아이디:<input class = "easyui-textbox" 
+			id="mem_id"	name="mem_id" 
+			data-options="iconCls:'icon-man'" style = " width : 300px " >   
+<hr>
+아이디2:<input id="emp_id" name="emp_id" value="tomato" style = " width : 200px " >   
+<button onclick="test()">전송</button>
+<button onclick="test2()">전송2</button>
+<div id="d_msg"></div>
+</body>
+</html>

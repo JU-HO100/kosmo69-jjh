@@ -1,0 +1,110 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<%@ include file="/common/bootstrap_common.jsp"%>
+<title>오늘 뭐 먹지?</title>
+<script type="text/javascript">
+function loginAction() {
+	//아이디 공백 확인
+    if($("#id").val() == ""){
+      alert("아이디 입력바람");
+      $("#id").focus();
+      return false;
+    }
+	
+  //비밀번호 공백 확인
+    if($("#passwd").val() == ""){
+      alert("비밀번호를 입력해주세요");
+      $("#passwd").focus();
+      return false;
+    }
+	
+}
+function findIdAction() {
+	location.href="./findId.jsp";
+}
+function findPwAction() {
+	location.href="./findPw.jsp";
+}
+</script>
+</head>
+<body>
+<table align="center" style="width: 70% ; height: 100%;">
+	<tr>
+		<td>
+			<%@ include file="./loginHeader.jsp"%>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<%@ include file="./loginContent.jsp" %>
+		</td>	
+	</tr>
+	<tr>
+		<td align="center" style="padding-bottom: 8%">
+			<%@ include file="./kakaoLogin.jsp" %>
+		</td>		
+	</tr>
+	<tr>
+		<td>
+			<%@ include file="./footer.jsp" %>
+		</td>
+	</tr>	
+</table>
+<script>
+// SDK를 초기화 합니다. 사용할 앱의 JavaScript 키를 설정해 주세요.
+Kakao.init('f61c36ee28b1fe4d00e270bcf75d344d')
+// SDK 초기화 여부를 판단합니다.
+console.log(Kakao.isInitialized())
+
+function kakaoLogin() {
+  //로그인하고
+  Kakao.Auth.login({
+    success: function (response) {
+      //사용자 정보 가져오기
+      Kakao.API.request({
+        url: '/v2/user/me', //계정 정보를 가져오는 request url
+        success: function (response) {
+          let user = response.kakao_account //카카오 계정 정보
+          //console.log(user)
+          user.host = 'kakao' //다른 로그인 서비스와 구분하기 위해서 개인적으로 추가했음
+          // 해당 페이지에서 객체를 만들고 곧바로 user 정보를 사용할 수 도 있고,
+          // input 엘리먼트에 json으로 저장해뒀다가 나중에 사용할 수도 있음. 여기서는 input에 저장
+          const userinfo = document.querySelector('#userinfo')
+          if (userinfo) userinfo.value = JSON.stringify(user) //user를 json문자열로 변환해서 저장해두기
+        },
+        fail: function (error) {
+          console.log(error)
+        },
+      })
+    },
+    fail: function (error) {
+      console.log(error)
+    },
+  })
+}
+function kakaoLogout() {
+  if (Kakao.Auth.getAccessToken()) {
+    //토큰이 있으면
+    Kakao.API.request({
+      //로그아웃하고
+      url: '/v1/user/unlink',
+      success: function (response) {
+        //console.log(response)
+      },
+      fail: function (error) {
+        console.log(error)
+      },
+    })
+    //토큰도 삭제
+    Kakao.Auth.setAccessToken(undefined)
+    //유저정보도 삭제
+    const userinfoElem = document.querySelector('#userinfo') 
+    if(userinfoElem) userinfoElem.value = ''
+  }
+}
+</script>
+</body>

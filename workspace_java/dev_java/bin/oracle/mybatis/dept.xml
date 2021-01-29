@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.DeptMapper">
+	<resultMap id="rdvo" type="com.vo.DeptVO">
+	</resultMap>
+	<parameterMap id="pdvo" type="com.vo.DeptVO">
+	</parameterMap>
+	<update id="deptUpdate" parameterType="com.vo.DeptVO">
+		update dept
+		set dnamem = #{dname}
+		,loc = #{loc}
+		where deptno = #{deptno}
+	</update>
+	<select id="getDeptList" parameterType="int" resultType="Map">
+		select
+		deptno,dname,loc from dept
+	</select>
+	<!-- <select id="getDeptList" parameterType="int" resultType="Map"> select 
+		deptno,dname,loc from dept where id = #{deleteDept} </select> -->
+	<insert id="deptInsert" parameterType="map">
+		insert into dept (deptno,
+		dname, loc) values(#{deptno},#{dname},#{loc})
+	</insert>
+
+	<insert id="multiDeptInsert" parameterType="list">
+		insert all
+		<foreach collection="list" item="item" index="index"
+			separator=" ">
+			into dept(deptno,dname,loc)
+			values(#{item.deptno},#{item.dname},#{item.loc})
+		</foreach>
+		select * from dual
+	</insert>
+	<delete id="deptDelete" parameterType="map">
+		delete from dept
+		<where>
+			deptno = #{deptno}
+		</where>
+	</delete>
+	<delete id="deptDelete1" parameterType="int">
+		delete from dept
+		<where>
+			deptno = #{deptno}
+		</where>
+	</delete>
+	<delete id="deptDelete2" parameterType="com.vo.DeptVO">
+		delete from dept
+		<where>
+			deptno = #{deptno}
+		</where>
+	</delete>
+	<delete id="deptDelete3" parameterType="map">
+		delete from dept
+		<where>
+			deptno = #{deptno}
+		</where>
+	</delete>
+	<delete id="deptDeleteList">
+		delete from dept
+		<where>
+			deptno in(#{deptno},#{deptno},#{deptno})
+		</where>
+		<!-- delete from dept where deptno values(#{deptno},#{deptno},#{deptno}) -->
+	</delete>
+	<delete id="deleteDeptALL" parameterType="arraylist">
+		delete from dept
+		where deptno IN
+		<!-- DELETE FROM dept WHERE deptno IN(41,42,43) -->
+		<foreach collection="list" item="item" index="index" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>jQueryAutoComplete - 자동완성 구현 화면</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+<style type="text/css">
+	#d_result{
+		position: absolute;
+		border: 1px solid black;
+		background: yellow;
+		width: 200;
+		height: 60;
+	}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#keyword").textbox('textbox').bind('keyup',function(e){
+// 			$("#d_result").css("left", $('#keyword').offset().left+"px");/* id값이 다시 받아올때 바뀌여서 그 값을 입력해 주어야 한다. */
+// 			$("#d_result").css("top", $("#keyword").offset().bottom+"px");
+			$("#d_result").css("left", $('#_easyui_textbox_input1').offset().left+"px");/* 위치값을 알아서 계산해서 적용해준다. */
+			$("#d_result").css("top", $("#_easyui_textbox_input1").offset().bottom+"px");
+			$("#d_result").html("<table border='1'><tr><td>탑</td></tr><tr><td>미드</td></tr><tr><td>바텀</td></tr></table>");	
+		});	
+	});
+</script>
+<input class="easyui-textbox" id="keyword" name="keyword" size="30">
+<div id="d_result"></div>
+</body>
+</html>

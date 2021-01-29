@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>문자열 속성 선택자</title>
+<style type="text/css">
+	li.select {color: orange;}
+	#w {border: 5px solid yellow;}
+/* 	img[src$=gif] {border: 5px solid yellow;} */
+	img[src$=jpg] {border: 5px solid grey;}
+	img[src$=png] {border: 5px solid gold;}
+</style>
+</head>
+<body>
+	<img id="w" src="../images/mu6.gif" width="200px" height="250px"/>
+	<img src="../images/mu5.jpg" width="200px" height="250px"/>
+	<img src="http://192.168.0.244:9000/images/react.png" width="200px" height="250px"/>
+	<ul>
+		<li class="select"><a href="#">Java</a></li><!-- 앵커태그:get방식 -->
+		<li><a href="#">로그인</a></li>
+		<!-- 앵커태그에 href속성을 사용하면 페이지 이동이 일어난다. *get방식*
+			get방식은 인터셉트를 당하게된다. 서버까지 전달이 되지 않는다.
+			브라우저를 새로 열어야 한다. 그러면 세션아이디(서버측[캐쉬메모리]에서 제공)가 달라진다.
+			세션아이디는 로컬 컴퓨터에 쿠키(text에 저장된다.:보안에취약함)에 저장된다.
+		 -->
+		<li class="select"><a href="./memberShip.html?id=apple">회원가입</a></li>
+	</ul>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>textboxTest.html</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+<style type="text/css">
+	#d_msg {
+		border: 2px solid gold;
+		width: 200px;
+		height: 100px;
+	}
+</style>
+</head>
+<body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#tb').textbox('setValue', '테스트')
+			$('#_easyui_textbox_input1').textbox('setValue', '테스트3');
+		});
+	</script>
+<div id="d_msg"></div><!-- 공간을 분할하는 용도로 사용하거나 메세지를 출력할 때 사욤함, ajax에서 화면을 추가할 때 사용함 -->
+<!-- 표준이 아닌 EasyUI를 사용했을 때 추가되는 태그들을 관할해 보자 -->
+ <div style="margin-bottom:20px">
+            <input value="kim@hot.com" id="tb"
+            	   class="easyui-textbox" label="Email:" 
+            	   labelPosition="top" data-options="prompt:'Enter a email address...',validType:'email'" 
+            	   style="width:100%;">
+    </div>
+<script type="text/javascript">
+// 	var email = $('#tb').textbox('getValue');
+	$("#d_msg").text("div영역"+$('#tb').val());
+// 	$('#tb').textbox('setValue', '테스트2');
+	$('#_easyui_textbox_input1').textbox('setValue', '테스트2');
+</script>
+</body>
+</html>

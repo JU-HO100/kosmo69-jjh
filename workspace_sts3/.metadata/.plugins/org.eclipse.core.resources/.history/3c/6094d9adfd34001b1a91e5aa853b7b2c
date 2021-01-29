@@ -1,0 +1,43 @@
+package com.di;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.spring.mvc1.DeptController;
+import com.spring.mvc1.DeptDao;
+import com.spring.mvc1.DeptLogic;
+
+public class MainForDept {
+	public static void main(String args[]) {
+		//BeanFactory, ApplicationContext = IoC 컨테이너
+		//컨테이너 = 담아두는 놈
+		//IoC 컨테이너는 DI를 담고있음
+		//DI : 객체 주입
+		//내가 주입해서 가는방향이  ==> 이 방향이라고 가정했을때(순방향)
+		//객체 주입은   <== 이 방향이다 (역방향)
+		//ApplicationContext 는 
+		//     AnnotationConfig ApplicationContext
+		//     ClassPathXml ApplicationContext("xxx/xxx/xxx.xml")
+		//     File어쩌구저쩌구 ApplicationContext
+		//	      그리고 하나 더 있음. (ㅈㅅ 지금 기억안남)
+		//ApplicationContext(컨테이너), 어쩌구저쩌구AppplicationContext 들은 (그 안에 있는 박스), 그리고 DI는 이 박스 안에 들어있다.
+		// DI ex) <bean id="dept" class="com.di.deptDao">  <= 이놈이 DI 이다
+		ApplicationContext context = new AnnotationConfigApplicationContext(AppContext.class);//설정파일 등록(xml급)
+		DeptController deptController = (DeptController)context.getBean("deptController");
+		DeptLogic 			deptLogic = context.getBean("deptLogic", DeptLogic.class);
+		DeptDao 			  deptDao = context.getBean(DeptDao.class);
+		deptController.setDeptLogic(deptLogic);
+		deptLogic.setDeptDao(deptDao);
+		deptController.deptList();
+//		System.out.println(deptController.deptList());
+	}
+}
+
+
+
+
+
+
+
+
+

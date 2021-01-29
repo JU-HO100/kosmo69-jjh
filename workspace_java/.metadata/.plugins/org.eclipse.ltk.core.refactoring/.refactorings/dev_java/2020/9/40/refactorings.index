@@ -1,0 +1,29 @@
+1601179214926	Copy elements
+1601179223989	Copy compilation unit
+1601179238434	Copy compilation unit
+1601179261856	Delete elements
+1601179318640	Rename type 'Login'
+1601179329521	Rename type 'MemberVO'
+1601179339559	Rename type 'TomatoClient'
+1601179350591	Rename type 'TomatoClientThread'
+1601179359386	Rename type 'TomatoDAO'
+1601179365921	Rename type 'TomatoMemberShip'
+1601179373240	Rename type 'TomatoServer'
+1601179379735	Rename type 'TomatoServerThread'
+1601179537300	Copy compilation unit
+1601271411912	Copy elements
+1601271525447	Rename type 'TomatoClient'
+1601271536966	Rename type 'TomatoClientThread'
+1601271544890	Rename type 'TomatoDAO'
+1601271552381	Rename type 'TomatoMemberShip'
+1601271559772	Rename type 'TomatoServer'
+1601271567261	Rename type 'TomatoServerThread'
+1601271778998	Delete elements
+1601271840027	Copy compilation units
+1601271855664	Rename type 'ChatClient'
+1601271862000	Rename type 'ChatClientThread'
+1601271868993	Rename type 'ChatDAO'
+1601271874387	Rename type 'ChatMemberShip'
+1601271880735	Rename type 'ChatServer'
+1601271886875	Rename type 'ChatServerThread'
+1601271893806	Rename type 'Login'

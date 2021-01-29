@@ -1,0 +1,30 @@
+package mvc1.online;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+
+public class MemberController implements Action {
+	Logger logger = Logger.getLogger(MemberController.class);
+	@Override
+	public ActionForward execute(HttpServletRequest req, HttpServletResponse res)
+		throws ServletException, IOException {
+		logger.info("execute 호출");
+		ActionForward af = new ActionForward();
+		String viewName = null;
+	    boolean isRedirect = false;
+	    //여전히 url과 메소드 이름을 1:1로 매칭하는 것은 해결이 안되고 있다.
+	    viewName = "/onLineTest/teacher/index.jsp";
+	    isRedirect = true;
+	    af.setRedirect(isRedirect);
+	    af.setViewName(viewName);
+		return af;
+	}
+
+}

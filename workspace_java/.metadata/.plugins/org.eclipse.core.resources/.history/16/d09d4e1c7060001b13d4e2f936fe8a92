@@ -1,0 +1,36 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%
+	//response.setIntHeader("Refresh",5);
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-3.1.1.min.js"></script> -->
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+    <a href="https://kauth.kakao.com/oauth/authorize?client_id=15f5287d753e527b86e1f231f7128313&redirect_uri=http://192.168.0.38:8000/member/index.jsp&response_type=code">
+          <img src="https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile28.uf.tistory.com%2Fimage%2F99BEE8465C3D7D12140EAC">
+    </a>
+    
+<!-- <div id="d_test">d_test</div> -->
+
+
+<script type='text/javascript'>
+
+	
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<a href="http://developers.kakao.com/logout"></a>
+
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

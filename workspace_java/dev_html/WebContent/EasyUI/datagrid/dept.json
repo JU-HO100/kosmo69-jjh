@@ -1,0 +1,42 @@
+[
+	{
+		"LOC": "서울",
+		"DEPTNO": 10,
+		"DNAME": "본사"
+	},
+	{
+		"LOC": "대전",
+		"DEPTNO": 14,
+		"DNAME": "영업팀"
+	},
+	{
+		"LOC": "대구",
+		"DEPTNO": 17,
+		"DNAME": "영업팀"
+	},
+	{
+		"LOC": "부산",
+		"DEPTNO": 15,
+		"DNAME": "해외영업팀"
+	},
+	{
+		"LOC": "울산",
+		"DEPTNO": 13,
+		"DNAME": "인사팀"
+	},
+	{
+		"LOC": "거제",
+		"DEPTNO": 11,
+		"DNAME": "생산팀"
+	},
+	{
+		"LOC": "광주",
+		"DEPTNO": 12,
+		"DNAME": "생산팀"
+	},
+	{
+		"LOC": "인천",
+		"DEPTNO": 19,
+		"DNAME": "해외영업팀"
+	}
+]

@@ -1,0 +1,8 @@
+package kakao.api;
+
+public class LoginController {
+	  String kakaoUrl = kakaoLogin.getAuthorizationUrl(session);
+
+	  /* 생성한 인증 URL을 View로 전달 */
+	  model.addAttribute("kakao_url", kakaoUrl);
+}	

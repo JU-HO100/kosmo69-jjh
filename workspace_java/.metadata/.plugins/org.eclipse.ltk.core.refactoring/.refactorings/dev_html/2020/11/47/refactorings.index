@@ -1,0 +1,46 @@
+1605499244215	Rename resource 'a20201116_2.jsp'
+1605513379076	Rename resource 'b.jsp'
+1605517087990	Rename resource 'jsonRequest.jsp'
+1605517484971	Rename resource 'a202011116_1.jsp'
+1605524608312	Delete element
+1605573322281	Move 'NewFile.jsp' to 'AJAX'
+1605573490990	Move 'NewFile.jsp' to 'board'
+1605573503195	Rename resource 'NewFile.jsp'
+1605574789590	Rename resource 'boardsell.jsp'
+1605575194871	Delete element
+1605586510053	Delete element
+1605592737539	Rename type 'BbsDAO'
+1605593190843	Rename package 'board.sell'
+1605593201770	Rename type 'ServletBoardSell'
+1605593239567	Rename type 'BoardServlet'
+1605593260128	Rename type 'BoardServlet2'
+1605595373254	Rename resource 'coffee maker'
+1605595608258	Rename resource 'coffeemaker.jsp'
+1605599892848	Delete element
+1605599978327	Delete element
+1605599988936	Rename resource 'coffe.jsp'
+1605601196967	Delete element
+1605601205689	Delete element
+1605671495936	Rename resource 'jdbcPool.jsp'
+1605681800572	Move 'typeA.html' to 'typeA'
+1605681806909	Move 'typeB.jsp' to 'typeB'
+1605681918685	Delete element
+1605681992848	Delete element
+1605687467792	Move 2 resources to 'include'
+1605687470206	Delete element
+1605687619713	Rename resource 'includer.jsp'
+1605687625610	Rename resource 'include.jsp'
+1605688494929	Delete elements
+1605746513794	Move 'import.jsp' to 'common'
+1605746546778	Rename resource 'import.jsp'
+1605764582062	Rename resource 'test2_4.jsp'
+1605764586709	Rename resource 'test2_3.jsp'
+1605764680777	Rename resource 'test2_2.jsp'
+1605764913712	Rename resource 'test2_2.jsp'
+1605764924891	Rename resource 'test2_3.jsp'
+1605764930060	Rename resource 'test2_4.jsp'
+1605764934770	Rename resource 'tstep1_4.jsp'
+1605764941439	Rename resource 'test2_5.jsp'
+1605766650430	Delete element
+1605845509349	Move compilation unit
+1605859309559	Rename resource 'News.xml'

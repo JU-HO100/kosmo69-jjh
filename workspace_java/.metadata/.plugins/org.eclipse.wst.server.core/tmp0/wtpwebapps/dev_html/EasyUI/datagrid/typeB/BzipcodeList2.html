@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>부서 관리-typeB[태그와 스크립트를 섞기]</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript">
+	var g_deptno=0;
+	function getDeptList(){
+		alert("조회누름");
+		$("#tb_dept").datagrid({
+			url:"../dept.json"
+		});
+	}
+	function addDept(){
+		alert("입력누름");
+		
+	}
+	function editDept(){
+		alert("수정누름");
+		
+	}
+	function removeDept(){
+		alert("삭제누름");
+		
+	}
+</script>
+</head>
+<body>
+<script type="text/javascript">
+	$(document).ready(function(){
+// 		$("#pp_dept").pagination({
+// 			total:20
+// 			,pageSize:15/* 페이지리스트에 페이지의 번호가 없다면 페이지 선택의 초기값이 null이다. */
+// 			,pageList:[3,7,10,20]
+// 		});
+		$("#dg_dept").datagrid({
+			title:"태그와 스크립트로 만들기"
+			,url:"../dept.json"	
+			,fitColumns:true
+			,singleSelect:true
+			,toolbar:'#tb_dept'
+			,onSelect: function(index,row){/* index:순번,field:컬럼명,value:값 */
+// 				var row2 = $("#dg_dept").datagrid("getSelected");
+				g_deptno = row.DEPTNO;
+// 				g_deptno = row2.DEPTNO;
+// 				alert(index+","+row+","+row2.DNAME+","+row2.LOC);
+			}
+			,onDblClickCell: function(index,field,row){/* index:순번,field:컬럼명,value:값 */
+				if("LOC" == field){//너 지역을 선택한거야?
+					location.href="../deptDelete.jsp?deptno="+g_deptno;//페이지 이동, url이 바뀐다.
+				}
+			}
+		});/////////////////end of datagrid	////////////////////////////////////
+	});/////////////////////end of ready-Domtree 스캔 완료////////////////////////////
+</script>
+<table id="dg_dept" class="easyui-datagrid" style="width:700px;height:300px">
+    <thead>
+        <tr>
+            <th data-options="field:'DEPTNO',width:100,align:'center'">부서번호</th>
+            <th data-options="field:'DNAME',width:100,align:'center'">이름</th>
+            <th data-options="field:'LOC' ,width:100,align:'center'">지역</th>
+        </tr>
+    </thead>
+</table>
+<div id="tb_dept">
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="getDeptList()">조회</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" 	 plain="true" onclick="addDept()">입력</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" 	 plain="true" onclick="editDept()">수정</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeDept()">삭제</a>
+</div>
+<div id="pp_dept" class="easyui-pagination" style="background:#FFBF00;border:1px solid #ccc;">
+</div>
+<script type="text/javascript">
+ 		$("#pp_dept").pagination({
+ 			total:20
+ 			,pageSize:7/* 페이지리스트에 페이지의 번호가 없다면 페이지 선택의 초기값이 null이다. */
+ 			,pageList:[3,7,10,20]
+ 		});
+</script>
+<div id="pp" class="easyui-pagination" style="background:#efefef;border:1px solid #ccc;"
+    data-options="total:100,pageSize:10">
+</div>
+</body>
+</html>

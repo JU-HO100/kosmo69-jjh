@@ -1,0 +1,20 @@
+package com.mycompary.online;
+
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class ListMainApp {
+
+	public static void main(String[] args) {
+		//Applicantion의 역할은 빈을 관리하는 빈공장장 = 관리자. - 등록을 xml에 해야함
+		ApplicationContext context = 
+				new ClassPathXmlApplicationContext("scr\\com\\mycompany\\online\\insaBean.xml");
+				//xml문서를 읽어오기 위해 쓴 메소드
+		List<String> listBean = (List<String>)context.getBean("listBean");
+		
+		
+		
+	}
+}

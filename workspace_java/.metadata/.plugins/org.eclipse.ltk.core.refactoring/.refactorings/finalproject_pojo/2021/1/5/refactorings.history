@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;finalproject_pojo/webapp/map.jsp&apos; to &apos;kmap.jsp&apos;" description="Rename resource &apos;map.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="webapp/map.jsp" name="kmap.jsp" stamp="1611477482663" updateReferences="true"/>
+</session>

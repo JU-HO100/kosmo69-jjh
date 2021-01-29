@@ -1,0 +1,23 @@
+package np.com.util;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import np.mem.model.MemberDao;
+
+public class KakaoDao {
+	
+	
+	public static KakaoDao getInstance() {
+		
+		return ;
+	}
+
+	public Map<String, Object> Login(Map<String, Object> pmap) {
+		
+		return null;
+	}
+
+}

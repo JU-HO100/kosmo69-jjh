@@ -1,0 +1,109 @@
+package com.example.demo;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+@Controller
+//서블릿을 직접 상속받는 대신에 어노테이션을 사용해서 결합도를 낮추었다.
+//두번째는 메소드의 파라미터 자리에 request와 response가 없는데도 메소드가 호출되었다.
+//이것은 더이상 request 객체나 response객체에 의존적이지 않다는 것이다.  없어도 웹서비스를 제공할 수 있다.
+
+@RequestMapping("/board/*")
+public class BoardController {
+   Logger logger = LogManager.getLogger(BoardController.class);
+   
+   //Autowired는 setter메소드를 굳이 쓰지 않더라도 객체주입을 받을 수 있게 해준다.
+   @Autowired(required=false)//처음 테스트 할때 false를 넣어놓는게 안전하다 - 안그러면 터짐
+   public BoardLogic boardLogic = null;
+   
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   @RequestMapping("writeForm.sp")
+   public String writeForm() 
+   {
+      logger.info("writeForm 메소드 호출 성공! ");
+      return "redirect:writeForm.jsp";
+   }
+   /////////////////////////////////////////////////////////////////////////////////////////// 
+  
+//   @RequestMapping("/boardInsert.sp")   
+   @PostMapping("boardInsert.sp")
+   public String boardInsert(@RequestParam(value="bs_file", required=false) MultipartFile bs_file
+		   				   , @RequestParam Map<String,Object> pMap) {      
+      logger.info("Con boardInsert 호출성공 !"+pMap);
+     //////////////////////////////////////////////////////////////////
+        //첨부파일을 처리할 땐 반드시 post 여야 한다.              
+        //주의사항:request 로는 사용자가 입력한 값을 받을 수가 없다.                
+        //따라서 cos.jar 에서 제공하는 MulitpartRequest 를 사용해야만 값을 요청할 수 있다.        
+		//밑의 Map과 HashMap의 역할을 @RequestParam이 대신 해준다
+//	    Map<String,Object> pmap = new HashMap<>();
+//		HashMapBinder hmb = new HashMapBinder(req);
+//		hmb.multiBind(pmap);
+		///////////////////////////////////////////////////////////////
+		String savePath = "C:\\workspace_java\\demo\\src\\main\\webapp\\pds";
+		String fullPath = null;
+		String filename = null;
+		if(bs_file!=null) {
+			try {
+				File file = new File(fullPath);
+				byte[] bytes = bs_file.getBytes();
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+				bos.write(bytes);
+				bos.close();
+				//파일 크기
+				long size = file.length();
+				double d_size = Math.floor(size/1024.0);
+				pMap.put("bs_file", filename);
+				pMap.put("bs_size", d_size);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+      	int result = 0;
+		String path = null;
+		logger.info("bs_file :"+bs_file+", pMap"+pMap.get("bs_file"));
+		result = boardLogic.boardInsert(pMap);
+		if(result == 1) {//등록 성공한거니?
+			path = "redirect:boardInsertOk2.jsp";
+		}else {//등록에 실패했니?
+			path = "redirect:boardInsertFail.jsp";
+		}
+//		result = boardLogic.boardInsert(pMap);
+		return path;
+   }
+   
+   /************************************************************************************************
+    * 게시판 글 조회 목록 구현
+    * @param pMap - get방식이나 post방식으로 전송시 자동으로 담김, 반복되는 코드를 줄였다
+    * @return "redirect:XXX.jsp" or "forward:XXX.jsp"(webapp) or XXX[WEB-INF:viewResolver사용]
+    * 
+    **************************************************************************************************/
+   @RequestMapping("/boardList.sp")   
+   public String boardList(Model mod,ModelMap rmap,@RequestParam Map<String,Object> pMap) {      //@RequestParam을 사용하면  url에 입력한 값을 읽어올 수 있다.
+      logger.info("Con boardList 호출성공 !"+pMap);            //Map을 찍기 떄문에 {} 안에 출력된다.               
+      //String pmem_id = req.getParameter("mem_id");                  // request.getParameter대신 사용하는것. 반복되는 코드를 줄여준다.
+      List<Map<String,Object>> bList = null;
+      bList = boardLogic.boardList(pMap);
+      rmap.addAttribute("boardList", bList);
+//      mod.addAttribute("boardList2",bList);
+//      return "redirect:boardList.jsp";
+      return "forward:boardList.jsp";
+   }
+   
+   
+}

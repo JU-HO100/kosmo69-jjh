@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>2.3.8.BUILD-SNAPSHOT</version>
+      <relativePath/> <!-- lookup parent from repository -->
+   </parent>
+   <groupId>com.example</groupId>
+   <artifactId>demo</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
+   <name>demo</name>
+   <description>Demo project for Spring Boot</description>
+
+   <properties>
+      <java.version>1.8</java.version>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-log4j2</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-test</artifactId>
+         <scope>test</scope>
+         <exclusions>
+            <exclusion>
+               <groupId>org.junit.vintage</groupId>
+               <artifactId>junit-vintage-engine</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+   <!--===================== 톰캣 의존성 주입 시작[jsp문서 인식] ======================-->
+      <dependency>
+         <groupId>org.apache.tomcat.embed</groupId>
+         <artifactId>tomcat-embed-jasper</artifactId>
+      </dependency>
+   <!--===================== 톰캣 의존성 주입 끝    ======================-->   
+   <!--===================== log4jdbc로그 추가 시작  ======================-->   
+      <!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4 -->
+      <dependency>
+          <groupId>org.bgee.log4jdbc-log4j2</groupId>
+          <artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+          <version>1.16</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-web -->
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-web</artifactId>
+          <version>2.13.3</version>
+      </dependency>
+   <!--===================== log4jdbc로그 추가 끝  ======================-->   
+      
+   <!-- =================== mybatis 의존성 주입 시작 ============================ -->
+      <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis</artifactId>
+	    <version>3.5.6</version>
+	</dependency>
+   <!-- ===================== mybatis 의존성 주입 끝 =========================== -->
+      
+   <!--===================== mybatis spring 추가 끝  ======================-->   
+      <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+	<dependency>
+	    <groupId>org.mybatis</groupId>
+	    <artifactId>mybatis-spring</artifactId>
+	    <version>2.0.6</version>
+	</dependency>
+   <!--===================== mybatis spring 추가 끝  ======================-->
+      
+   <!--===================== JSON 추가 시작  ======================-->   
+	<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+	<dependency>
+	    <groupId>com.google.code.gson</groupId>
+	    <artifactId>gson</artifactId>
+	    <version>2.8.6</version>
+	</dependency>
+   <!--===================== JSON 추가 끝  ======================-->   
+  
+   <!--===================== HikariCP 추가 시작  ======================-->   
+   <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+	<dependency>
+	    <groupId>com.zaxxer</groupId>
+	    <artifactId>HikariCP</artifactId>
+	    <version>3.4.5</version>
+	</dependency>
+   <!--===================== HikariCP 추가 끝  ======================-->   
+  
+   <!--===================== Spring jdbc 추가 끝  ======================-->   
+	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-jdbc -->
+	<dependency>
+	    <groupId>org.springframework.boot</groupId>
+	    <artifactId>spring-boot-starter-jdbc</artifactId>
+	    <version>2.3.7.RELEASE</version>
+	</dependency>
+   <!--===================== Spring jdbc 추가 끝  ======================-->  
+   
+   <!--===================== 서버 자동 리로드 추가 끝  ======================-->  
+   <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <optional>true</optional>
+    </dependency>
+   <!--===================== 서버 자동 리로드 추가 끝  ======================-->  
+    
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+         </plugin>
+      </plugins>
+   </build>
+
+   <repositories>
+      <repository>
+         <id>spring-milestones</id>
+         <name>Spring Milestones</name>
+         <url>https://repo.spring.io/milestone</url>
+      </repository>
+      <repository>
+         <id>spring-snapshots</id>
+         <name>Spring Snapshots</name>
+         <url>https://repo.spring.io/snapshot</url>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+      </repository>
+   </repositories>
+   <pluginRepositories>
+      <pluginRepository>
+         <id>spring-milestones</id>
+         <name>Spring Milestones</name>
+         <url>https://repo.spring.io/milestone</url>
+      </pluginRepository>
+      <pluginRepository>
+         <id>spring-snapshots</id>
+         <name>Spring Snapshots</name>
+         <url>https://repo.spring.io/snapshot</url>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+      </pluginRepository>
+   </pluginRepositories>
+
+</project>

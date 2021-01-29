@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.TempMapper2">
+	<select id="getTempList"  resultType="map">
+		  SELECT W_DATE,  LOCATION, AVGTEMP, MINTEMP, MAXTEMP
+		  FROM WEATHER_DATA
+		 ORDER BY W_DATE DESC
+	</select>
+	<select id="getConTempList" parameterType="java.lang.String" resultType="map">
+		SELECT to_char(to_char(w_date),'YYYY') as w_date, location, avgtemp, mintemp, maxtemp
+		 FROM weather_data
+		
+	</select>
+	<select id="getCalTempList"  parameterType="map" resultType="map">
+		SELECT  TO_CHAR(TO_DATE(W_DATE),'YYYY') as "W_DATE"
+				<choose>
+  				  <when test= "gubun=='MIN'">
+				, MIN (MINTEMP) as "MINTEMP"
+  				  </when>
+  				  <when test="gubun=='MAX'">
+				, MAX (MAXTEMP) as "MAXTEMP"
+  				  </when>
+  				   <when test="gubun=='AVG'">
+				, ROUND(AVG (AVGTEMP),1) as "AVGTEMP" 
+  				  </when>
+				</choose>
+ 			FROM WEATHER_DATA 
+ 			<if test="sYear!=null">
+ 				WHERE TO_NUMBER(SUBSTR(W_DATE, 1, 4), 9999) BETWEEN #{sYear} AND #{eYear}
+ 			</if>
+ 			<if test="sYear==null">
+	 			WHERE W_DATE LIKE #{eYear}||'%'
+ 			</if>
+		   <where>
+		 	<if test="search != null and search.length>0 ">
+		 		and search = #{value}
+				and search > gubun 
+		 	</if>
+		 	<if test="search != null and search.length>0 ">
+		 		and search = #{value}
+		 		and gubun > search 
+		 	</if>
+		 </where>
+		    GROUP BY TO_CHAR(TO_DATE(W_DATE),'YYYY')
+	</select>
+	<select id="getYearList"  resultType="map">
+		   SELECT DISTINCT SUBSTR(W_DATE, 1, 4) AS YEAR
+ 			 FROM WEATHER_DATA
+ 			 ORDER BY YEAR DESC
+	</select>
+</mapper>

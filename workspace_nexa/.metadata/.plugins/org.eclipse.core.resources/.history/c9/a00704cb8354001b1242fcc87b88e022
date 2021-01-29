@@ -1,0 +1,7 @@
+package com.kosmo.nexa;
+
+
+//@Controler
+public class DeptController {
+	Logger logger = Logger.
+}

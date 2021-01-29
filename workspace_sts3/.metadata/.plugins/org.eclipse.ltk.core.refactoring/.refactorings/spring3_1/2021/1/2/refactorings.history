@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;spring3_1/src/main/webapp/WEB-INF/views/board/boardDel.jsp&apos; to &apos;boardDelForm.jsp&apos;" description="Rename resource &apos;boardDel.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/webapp/WEB-INF/views/board/boardDel.jsp" name="boardDelForm.jsp" stamp="1609726030516" updateReferences="true"/>
+</session>

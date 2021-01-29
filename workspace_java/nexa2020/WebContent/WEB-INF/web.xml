@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <display-name>nexa2020</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+
+	<servlet>
+		<servlet-name>empERP</servlet-name>
+ 		<servlet-class>web.nexa.EmpDataSet</servlet-class>
+  	</servlet>
+ 
+ <servlet-mapping>
+   <servlet-name>empERP</servlet-name>
+   <!-- http://192.168.0.38:9000/nexa2020/nexa/*.do 도 되지만 하지 않는다.  -->
+ <url-pattern>/nexa2020/nexa/empManagerAction.do</url-pattern>
+<!--  <url-pattern>*.do</url-pattern> -->
+ </servlet-mapping>
+</web-app>

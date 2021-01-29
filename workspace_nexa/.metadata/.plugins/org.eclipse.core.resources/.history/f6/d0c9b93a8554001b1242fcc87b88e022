@@ -1,0 +1,7 @@
+package com.mvc.dept;
+
+
+@Controler
+public class DeptController {
+			
+}

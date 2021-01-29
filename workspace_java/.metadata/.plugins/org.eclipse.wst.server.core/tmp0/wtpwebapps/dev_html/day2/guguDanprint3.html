@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>guguDanprint</title>
+<script type="text/javascript">
+	function account(p_start,p_end) {
+			document.write("<center><h1>구구단</h1><table width='90%'><tr>")
+			//단수 처리하기
+			for(var i=p_start;i<=p_end;i++){
+				document.write("<tb bgcolor='green' width='80px' height='50px' align='center'>",i,"단","</td>")
+				if(i==p_end) document.write("</tr></tr>")
+			}
+			//계산 처리하기
+			for(var a=p_start;a<=p_end;a++){
+				document.write("<td dgcolor='yellow' width='80px' height='50px' aligen='center'><font color='green'><b>")
+				for(var b=1;b<10;b++){
+					document.write(a,"*",b,"=",a*b,"<br>")
+				}
+				document.write("</b><font></td>")				
+			}
+			//바닥 처리하기
+			document.write("</tr></table>")
+			document.write("</center>")
+			document.write("<br>")
+			document.write("시작단 : "+p_start+", 끝단 : "+p_end);
+	}
+</script>
+</head>
+<body>
+<script type="text/javascript">
+	document.write("<h1>for문을 활용한 구구단 출력하기</h1>");
+</script>
+<!-- 여기는 html의 영역이다. 그래서 document.write()를 쓰면 안된다. -->
+<form id="f_guguDan" name="f_guguDan">
+시작단 : <input type="text" name="txtStart"><br>
+끝단 : <input type="text" name="txtEnd"><br>
+<button id="btn_print" onClick="javascript:account(document.f_guguDan.txtStart.value, document.f_guguDan.txtEnd.value)">구구단 출력하기</button> <!-- javascript에 java의 함수를 쓸수 있다. -->
+
+</form>
+</body>
+</html>

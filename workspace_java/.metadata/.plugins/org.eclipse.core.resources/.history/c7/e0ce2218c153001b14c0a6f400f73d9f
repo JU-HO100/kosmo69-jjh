@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 지도</title>
+
+</head>
+<body>
+<input >
+<div id="map" style="width:100%;height:950px;"></div>
+
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f61c36ee28b1fe4d00e270bcf75d344d"></script>
+<script>
+	var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+	    mapOption = {
+	        center: new kakao.maps.LatLng(37.56734, 126.97066), // 지도의 중심좌표
+	        level: 4, // 지도의 확대 레벨
+	        mapTypeId : kakao.maps.MapTypeId.ROADMAP // 지도종류
+	    }; 
+
+	// 지도를 생성한다 
+	var map = new kakao.maps.Map(mapContainer, mapOption); 
+
+	// 지도에 마커를 생성하고 표시한다
+	var marker = new kakao.maps.Marker({
+	    position: new kakao.maps.LatLng(37.56734, 126.97066), // 마커의 좌표
+	    map: map // 마커를 표시할 지도 객체
+	});
+	var iwContent = '<div style="padding: 5px">내용</div>',
+	iwPosition = kakao.maps.LatLng(33.450701,126.570667);
+	
+	//인포윈도우 생성
+	var infowindow = new kakao.maps.InfoWindow({
+		position: iwPosition,
+		content: iwContent
+	});
+	
+	//마커 위에 인포윈도우를 표시
+	infowindow.open(map, marker);
+</script>
+</body>
+</html>

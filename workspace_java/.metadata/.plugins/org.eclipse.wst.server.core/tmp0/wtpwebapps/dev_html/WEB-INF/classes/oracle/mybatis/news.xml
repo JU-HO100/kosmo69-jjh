@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="oracle.mybatis.NewsMapper">
+ 	<select id="getNewsList" resultType="map">
+ 		select title, DAY, MEM, GENRE
+ 			from newslist
+	</select>
+	<select id="getNewsDetail" parameterType="map" resultType="map">
+		select title, day, mem, genre
+			from newslist
+		<where>
+			<if test="day != null and day.length>0">
+				day = ${key}
+			</if>
+			<if test="title != null and title.length>0">
+				title = ${key}
+			</if>
+			<if test="genre != null and genre.length>0">
+				genre = ${key}
+			</if>
+		</where>
+	</select>
+	<select id="getNewsContente">
+		select title, day, mem, contente
+			from newlist
+			<where>
+				<if test="titile != null">
+					title = ${key}
+				</if>
+			</where>
+	</select>
+	<insert id="NewsInsert" parameterType="map">
+		insert into newslist(num , title , day , mem , genre , contente)
+			values{seq_newslist.nextval,#{title},TO_CHAR(SYSDATE,'YYYY-NN-DD')
+					, #{mem} , #{genre}
+	</insert>
+	<update id="NewsUpdate" parameterType="map">
+			
+	
+	</update>
+	<delete id="NewDelete" parameterType="int">
+			
+	</delete>
+ </mapper>

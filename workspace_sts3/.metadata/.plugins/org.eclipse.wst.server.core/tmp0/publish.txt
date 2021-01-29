@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Tue Jan 05 10:46:25 KST 2021
+org.eclipse.jst.jee.server\:/binary\:C\:\\Users\\Kosmo_08\\.m2\\repository\\org\\springframework\\spring-web\\3.2.18.RELEASE\\spring-web-3.2.18.RELEASE.jar=WEB-INF/lib/spring-web-3.2.18.RELEASE.jar
+org.eclipse.jst.jee.server\:/binary\:C\:\\workspace_sts3\\spring4\\WebContent\\WEB-INF\\lib\\spring-web-4.3.29.RELEASE.jar=WEB-INF/lib/spring-web-4.3.29.RELEASE.jar

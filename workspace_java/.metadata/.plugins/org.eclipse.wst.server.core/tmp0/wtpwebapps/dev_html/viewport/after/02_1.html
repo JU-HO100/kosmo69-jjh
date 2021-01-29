@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- 
+	width:device-width, 양수 - 뷰포트의 너비결정
+	width:device-height, 양수 - 뷰포트의 높이결정
+	initial-scale, 양수 - 뷰포트의 초기 배율을 지정
+	user-scalable, yes(기본값) or no - no를 주면 확대가 불가능하다.
+	minimum-scale=1, 양수 - 뷰포트의 최소 축소 비율을 지정. 기본값은 0.25 (1/4)
+	
+ -->
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-whidt, initial-scale=1, minimum-scale=1,maximum-scale=1, user-scalable=no">
+<title>미디어 쿼리 사용하기</title>
+<style type="text/css">
+	@media all and (min-width:320px){/*   브라우저 크기가 320이상일 때 빨강색으로 변경함.*/
+		body{
+			background: red;
+		}
+	}
+	@media all and (min-width:768px){/*   브라우저 크기가 768이상일 때 빨강색으로 변경함.*/
+		body{
+			background: green;
+		}
+	}
+	@media all and (min-width:960px){/*   브라우저 크기가 960이상일 때 빨강색으로 변경함.*/
+		body{
+			background: #2EFEF7;
+		}
+	}
+</style>
+</head>
+<body>
+
+</body>
+</html>

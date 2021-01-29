@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.EmpMapper">
+   <select id="getEmpList" parameterType="map" resultType="map">
+      SELECT    0 ck, empno ,ename
+            ,job   ,TO_CHAR(hiredate,'YYYY-MM-DD') hiredate
+            ,mgr   ,sal
+            ,NVL(comm, 0) AS "COMM"  ,deptno
+      FROM emp
+   </select>
+      
+      
+   <select id="getEmpList3" parameterType="map" resultType="map">
+      SELECT    0 ck, empno ,ename
+            ,job   ,TO_CHAR(hiredate,'YYYY-MM-DD') hiredate
+            ,mgr   ,sal
+            ,NVL(comm, 0) AS "COMM"  ,deptno
+      FROM emp
+      <where>
+         <if test='g_empno > 0'>
+            and empno = #{g_empno}   <!-- 키값 --><!-- 값을 입력받을 때는 #{} 형식으로 사용 -->
+         </if>
+         <if test='uempno != null'>
+            and empno = #{keyword}
+         </if>
+         <if test='uename != null and uename.length>0'>
+            and ename LIKE '%'||#{keyword}||'%'
+         </if>
+         <if test='usal != null'>
+            and sal = #{keyword}
+         </if>
+      </where>
+   </select>
+   <select id="getEMP" resultType="map">
+      SELECT empno, sal, NVL(comm,0) as "comm" FROM emp
+   </select>
+   
+</mapper>
+
+

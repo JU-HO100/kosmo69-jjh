@@ -1,0 +1,14 @@
+package com.mvc.dept;
+
+
+@Controler
+@RequestMapping("/nexa/*")
+public class DeptController {
+	   Logger logger = LoggerFactory.getLogger(DeptController.class);
+	   
+	   @GetMapping("deptXML.kosmo")
+	   public void deptXML() throws PlatformException {
+	      logger.info("deptXML 호출 성공");
+	   }
+			
+}

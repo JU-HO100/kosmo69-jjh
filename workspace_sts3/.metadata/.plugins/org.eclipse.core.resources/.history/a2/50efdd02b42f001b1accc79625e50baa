@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+   <bean id="default-handler-mapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+   <bean name="/insaList.nhn">
+   		<property name="listBean">
+   			<list>
+   				<value>Hi1</value>
+   				<value>Hi2</value>
+   				<value>Hi3</value>
+   			</list>
+   		</property>
+   </bean>
+</beans>

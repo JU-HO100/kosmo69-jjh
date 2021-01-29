@@ -1,0 +1,5 @@
+package kakao.api;
+
+public class KakaoController {
+
+}

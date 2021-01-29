@@ -1,0 +1,14 @@
+package np.com.controller;
+
+import javax.servlet.http.HttpSession;
+
+public class KakaoDao {
+
+	public static KakaoDao getInstance() {
+		
+		
+		
+		return null;
+	}
+
+}

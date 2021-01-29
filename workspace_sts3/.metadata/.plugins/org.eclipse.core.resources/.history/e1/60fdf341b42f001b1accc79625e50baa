@@ -1,0 +1,23 @@
+package com.mycompary.online;
+
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+public class ListController extends AbstractController {
+	Logger logger = Logger.getLogger(ListController.class);
+	List<String> listBean = null;
+	
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		logger.info("ListController 호출");
+		ModelAndView mav = new ModelAndView();
+		return null;
+	}
+
+}

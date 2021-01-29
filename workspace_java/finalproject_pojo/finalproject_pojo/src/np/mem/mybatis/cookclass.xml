@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="np.mem.mybatis.CookClassMapper"> 
+	<resultMap id="cookClassMap" type="hashmap"/>
+	
+	<!-- 셰프 : 쿠킹클래스 생성, 회원 : 쿠킹클래스 참가 -->
+	<select id="proc_cookclass" parameterType="map" statementType="CALLABLE"> 
+		{ call proc_cookclass(
+			#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_classcd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_cook,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_ingredients,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_zip,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_zipdetail,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_member,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_date,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+		)}
+	</select> 
+	
+	<!-- 셰프 : 쿠킹클래스 삭제, 회원 : 쿠킹클래스 참가 취소 -->
+	<select id="proc_cancel_cookclass" parameterType="map" statementType="CALLABLE"> 
+		{ call proc_cancel_cookclass(
+			#{c_classcd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+		)}
+	</select> 
+	
+	<!-- 쿠킹클래스 리스트 -->
+	<select id="proc_show_cookclass" parameterType="map" statementType="CALLABLE"> 
+		{ call proc_show_cookclass(
+			#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=cookClassMap}
+		)}
+	</select> 
+	
+	
+	<!-- 셰프전용  : 내 쿠킹클래스에 참여한 회원보기, 회원 수락, 회원 반려 -->
+	<select id="proc_cookclass_forChef" parameterType="map" statementType="CALLABLE"> 
+		{ call proc_cookclass_forChef(
+			#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{chef_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{c_classcd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=cookClassMap}
+		)}
+	</select> 
+	
+
+</mapper>

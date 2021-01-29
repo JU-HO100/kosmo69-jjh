@@ -1,0 +1,29 @@
+package np.com.util;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+
+import np.mem.model.MemberDao;
+
+public class KakaoDao {
+	
+	private static final String NAMESPACE = "np.mem.mybatis.MemberMapper.";
+	private SqlSessionFactory sqlMapper = null;
+	
+	private static MemberDao instanceDao = new MemberDao();
+	private KakaoDao() {
+		sqlMapper = MyBatisCommonFactory.getSqlSessionFactory();
+	}
+	public static KakaoDao getInstance() {
+		
+		return instanceDao;
+	}
+
+	public Map<String, Object> Login(Map<String, Object> pmap) {
+		
+		return null;
+	}
+
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+    xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="default-handler-mapping" 
+	      class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+	<bean id="member-controller" class="com.mycompany.online.MemberController">
+		<property name="methodNameResolver" ref="propertiesPathNameResolver"/>
+		<property name="memberLogic" ref="member-logic"/>
+	</bean>
+	<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/test/memberList.nhn">member-controller</prop>
+				<prop key="/test/memberInsert.nhn">member-controller</prop>
+				<prop key="/test/memberUpdate.nhn">member-controller</prop>
+				<prop key="/test/memberDelete.nhn">member-controller</prop>
+			</props>
+		</property>
+	</bean>      
+	<bean id="propertiesPathNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/test/memberList.nhn">memberList</prop>
+				<prop key="/test/memberInsert.nhn">memberInsert</prop>
+				<prop key="/test/memberUpdate.nhn">memberUpdate</prop>
+				<prop key="/test/memberDelete.nhn">memberDelete</prop>
+			</props>
+		</property>
+	</bean>  	
+	<bean name="/insaMap.nhn" class="com.mycompany.online.MapController">
+		<property name="mapBean">
+		<!-- List<String> listBean = new ArrayList<>(); listBean.add("Hi!!!") -->
+			<map>
+				<entry>
+					<key><value>prop1</value></key>
+					<value>JAVA</value>
+				</entry>
+				<entry>
+					<key><value>prop2</value></key>
+					<value>JSP</value>
+				</entry>
+				<entry>
+					<key><value>prop3</value></key>
+					<value>ORACLE</value>
+				</entry>
+			</map>
+		</property>
+	</bean>      
+	<bean name="/insaList.nhn" class="com.mycompany.online.ListController">
+		<property name="listBean">
+		<!-- List<String> listBean = new ArrayList<>(); listBean.add("Hi!!!") -->
+			<list>
+				<value>Hi!!!</value>
+				<value>Have a Good Time!</value>
+				<value>Have a Nice Day!</value>
+			</list>
+		</property>
+	</bean>   
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>   
+</beans>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+	<bean id="member-controller" class="com.spring.mvc1.MemberController">
+		<property name="methodNameResolver" ref="propertiesPathNameResolver"/>
+		<property name="memberLogic" ref="member-logic"/>
+	</bean>
+	<!-- IoC를 위한 컨트롤 계층 선언 및 등록 -->
+	<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<!-- url 과 class를 이어주는 역할 -->
+		<property name="mappings">
+			<props>
+				<prop key="/member/login.test">member-controller</prop>
+				<prop key="/member/insert.test">member-controller</prop>
+				<prop key="/member/update.test">member-controller</prop>
+				<prop key="/member/delete.test">member-controller</prop>
+			</props>
+		</property>
+	</bean>      
+	<!-- 해당하는 요청 URL에 대해서 메소드 이름을 매칭하는 곳 -->
+	<bean id="propertiesPathNameResolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<!-- url 과 메소드를 이어주는 역할 -->
+		<property name="mappings"><!-- setter메소드의 이름으로 사용되니까 사용하면 안된다. -->
+			<props>
+				<prop key="/member/login.test">login</prop><!-- 메소드 이름 등록 -->
+				<prop key="/member/insert.test">insert</prop>
+				<prop key="/member/update.test">update</prop>
+				<prop key="/member/delete.test">delete</prop>
+			</props>
+		</property>
+	</bean> 
+	<context:component-scan base-package="com.di"/>
+</beans>

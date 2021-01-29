@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.memberMapper">
+	<select id="boardList" parameterType="map" resultType="map">
+		SELECT 
+            bm.bm_no, bm.bm_title, bm.bm_writer, bm.bm_contente, bm.bm_emaile, bm.bm_date, bm.bm_pw, bm.bm_group, bm.bm_pos, bm.bm_step, bm.bm_hits, NVL(bs.bs_file,'') bs_file, NVL(bs.bs_size,0) bs_size
+        FROM board_master bm left outer join board_sub bs
+          ON bm.bm_no = bs.bm_no
+        <where>
+        	<if test="bm_no>0">
+        		And bm.bm_no = #{bm_no}
+        	</if>
+        </where>
+        ORDER BY bm.bm_no desc
+	</select>	  
+	
+	<select id="boardDetail" parameterType="map" resultType="map">
+		SELECT
+			bm_no, bm_title, bm_writer, bm_contente, bm_date, bm_emaile , bm_pw
+		FROM board_master 
+		<where>
+			<if test="bm_no>0">
+				And bm_no = #{bm_no}
+			</if>
+		</where>
+	</select>
+
+	<select id="seqBoardNo" parameterType="string" resultType="int">
+		SELSECT SEQ_BOARD_NO.nextval FROM dual
+	</select>
+	
+	<insert id="boardMInsert" parameterType="map">
+		INSERT INTO board_master(bm_no, bm_title, bm_writer, bm_contente
+                          ,bm_emaile, bm_pw, bm_date, bm_group, bm_pos, bm_step)
+     VALUES(4,'제목2','작성자2','내용2','test@naver.com','123','2020-12-18',0,0,0)
+	</insert>
+	
+	<insert id="boardDInsert" parameterType="map">
+		INSERT INTO board_sub(bm_no, bs_seq, bs_file, bs_size)
+		VALUES (4,1,'test.txt',10)
+	</insert>
+	
+<update id="updateStep" parameterType="map">
+   update board_master
+      set bm_step = bm_step + 1
+      where bm_group =35
+      and bm_step >1
+</update>   
+
+<update id="boardMUpdate" parameterType="map">
+   Update board_master
+      set bm_title = #{bm_title}
+      ,bm_contente = #{bm_contente}
+      ,bm_writer = #{bm_writer}
+      ,bm_pw = #{bm_pw}
+      ,bm_email = #{bm_emaile}
+      ,bm_date = TO_CHAR(sysdate, 'YYYY-MM-DD')
+      where bm_no = #{bm_no}
+   </update>
+   
+<update id="boardSUpdate" parameterType="map">
+   Update board_sub
+      set bm_file = #{bm_file}
+      ,bm_size = #{bm_size}
+      where bm_no =  #{bm_no}
+   </update>
+   
+<delete id="boardMDelete" parameterType="map">
+   Delete board_master
+      where bm_no =  #{bm_no}
+   </delete>
+   
+<delete id="boardSDelete" parameterType="map">
+   Delete board_sub
+      where bm_no =  #{bm_no}
+      AND bs_seq = #{bs_seq}
+   </delete>
+   
+</mapper>

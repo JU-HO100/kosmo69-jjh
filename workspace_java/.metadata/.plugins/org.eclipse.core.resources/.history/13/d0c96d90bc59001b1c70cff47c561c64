@@ -1,0 +1,32 @@
+package np.com.util;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.log4j.Logger;
+
+import np.mem.model.MemberDao;
+
+public class KakaoDao {
+	Logger logger = Logger.getLogger(MemberDao.class);
+	private static final String NAMESPACE = "np.mem.mybatis.MemberMapper.";
+	private SqlSessionFactory sqlMapper = null;
+	
+	// 싱글톤
+	private static KakaoDao instanceDao = new KakaoDao();
+	private KakaoDao() {
+		sqlMapper = MyBatisCommonFactory.getSqlSessionFactory();
+	}
+	
+	public static KakaoDao getInstance() {
+		
+		return ;
+	}
+
+	public Map<String, Object> Login(Map<String, Object> pmap) {
+		
+		return null;
+	}
+
+}

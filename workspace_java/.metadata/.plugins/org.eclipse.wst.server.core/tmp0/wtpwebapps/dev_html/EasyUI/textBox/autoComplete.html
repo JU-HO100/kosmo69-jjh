@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>autoComplete - 자동완성 구현 화면</title>
+<style type="text/css">
+	#d_result{/* div#d_result도 써도 된다. */
+		position: absolute;
+		border: 1px solid black;
+		background: gold;
+		width: 200;
+		height: 60;
+	}
+</style>
+<script type="text/javascript" src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript">
+	function search(){
+// 		alert("a");
+		$("#d_result").show();
+// 		$("#d_result").css("left",$("#keyword").offset().left+"px");
+		$("#d_result").css("left",20+"px");
+// 		$("#d_result").css("top",50+"px");
+		$("#d_result").css("top",$("#keyword").offset().bottom+"px");
+		$("#d_result").html("<table border='1'><tr><td>상단</td></tr><tr><td>중단</td></tr><tr><td>하단</td></tr></table>");
+	}
+	function search2(){
+// 		alert("a");
+		$("#d_result").show();
+		$("#d_result").css("left", $('#keyword2').offset().left+"px");/* 위치값을 알아서 계산해서 적용해준다. */
+		$("#d_result").css("top",$("#keyword2").offset().bottom+"px");
+		$("#d_result").html("<table border='1'><tr><td>탑</td></tr><tr><td>미드</td></tr><tr><td>바텀</td></tr></table>");
+	}
+</script>
+</head>
+<body>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#d_result").hide();
+	});
+</script>
+<input type="text" id="keyword" name="keyword" size="30" onkeyup="search()">
+<input type="text" id="keyword2" name="keyword2" size="40" onkeyup="search2()">
+<div id="d_result"></div>
+</body>
+</html>

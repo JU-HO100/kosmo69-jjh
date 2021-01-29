@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>시험페이지1[testForm.html]</title>
+<script type="text/javascript">
+	function test(pcb){
+		for(int i=0;i<document.f_test1.cb.length;i++){//체크박스의 길이 확인
+			if(pcb==1){//체크박스에 체크가 1개 되어있다면 실행
+				document.f_test1.cb[i].checked=1;//
+			}else{
+				document.f_test1.cb[i].checked=0;//체크된곳 외 나머지는 체크해제
+			}
+		}
+	}
+	function next(){
+		var temp = 1;//정답은 1번부터이니 1번으로 초기화
+		for(int i=0;i<document.f_test1.cb.length;i++){//체크박스의 길이 확인
+			if(document.f_test1.cb[i].checked == 1){//체크되어있는 번호가 1번이니?
+				document.f_test1.htest1.value = temp;//맞다면 실행
+			}else{//아니라면 실행
+				temp++;//temp의 값을 +1;
+			}
+		}
+		document.f_test1.submit();
+	}
+	
+</script>
+
+
+</head>
+<body>
+<form name="f_test1" method="get" action="testForm2.jsp">
+<input type="hidden" name="htest1"/><!-- 개발자가 화면없이 실행할때 자주 쓴다. -->
+	문제1. 다음 중 DML구문이 아닌 것을 고르시오.<br>
+	<input type="checkbox" name="cb" onChange="test(0)">select<br>
+	<input type="checkbox" name="cb" onChange="test(1)">insert<br>
+	<input type="checkbox" name="cb" onChange="test(2)">create<br>
+	<input type="checkbox" name="cb" onChange="test(3)">delete<br>
+	<br>
+	<input id="btn_next" type="button" value="다음문제" onclick="next()">
+</form>
+</body>
+</html>

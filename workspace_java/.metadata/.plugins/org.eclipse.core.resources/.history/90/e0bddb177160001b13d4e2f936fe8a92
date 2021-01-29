@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<%@ include file="/common/bootstrap_common.jsp"%>
+<title>오늘 뭐 먹지?</title>
+<script type="text/javascript">
+function loginAction() {
+	//아이디 공백 확인
+    if($("#m_id").val() == ""){
+      alert("아이디 입력바람");
+      $("#m_id").focus();
+      return false;
+    }
+	
+  //비밀번호 공백 확인
+    if($("#m_pw").val() == ""){
+      alert("비밀번호를 입력해주세요");
+      $("#m_pw").focus();
+      return false;
+    }
+	
+}
+	function findIdAction() {
+		location.href="/findId.jsp";
+	}
+	function findPwAction() {
+		location.href="/findPw.jsp";
+	}
+	
+</script>
+</head>
+<body>
+
+<table align="center" style="width: 70% ; height: 100%;">
+	<tr>
+		<td>
+			<%@ include file="/loginHeader.jsp"%>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<%@ include file="/loginContent.jsp" %>
+		</td>	
+	</tr>
+	
+	<tr>
+		<td align="center">
+<%-- 			<%@ include file="/kakaoLogin5.jsp" %> --%>
+			 <a href="https://kauth.kakao.com/oauth/authorize?client_id=15f5287d753e527b86e1f231f7128313&redirect_uri=http://192.168.0.38:8000/kakaoLogin5.jsp&response_type=code">
+          		<img src="https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile28.uf.tistory.com%2Fimage%2F99BEE8465C3D7D12140EAC">
+    		</a>
+			<br>
+<%-- 			<%@ include file="/naverLogin.jsp" %> --%>
+		</td>
+	</tr>
+	<tr>
+		<td style="padding-top: 12%">
+			<%@ include file="/footer.jsp" %>
+		</td>
+	</tr>	
+</table>
+
+</body>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>부서 관리-typeB[태그와 스크립트를 섞기]</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+
+</head>
+<body>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#dg_dept").datagrid({
+			title:"태그와 스크립트로 만들기"
+			,url:"../dept.json"
+			
+		});
+	});
+</script>
+<table id="dg_dept" class="easyui-datagrid" style="width:400px;height:300px" toolbar="#tb_test"
+         data-options="url:'datagrid_data.json' , fitColumns:true , singleSelect:true">
+    <thead>
+        <tr>
+            <th data-options="field:'DEPTNO',width:100,align:'center'">부서번호</th>
+            <th data-options="field:'DNAME',width:100,align:'center'">이름</th>
+            <th data-options="field:'LOC' ,width:100,align:'center'">지역</th>
+        </tr>
+    </thead>
+</table>
+	<div id="tb_test">
+	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="getDeptList()">조회</a>
+	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" 	 plain="true" onclick="addDept()">입력</a>
+	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" 	 plain="true" onclick="editDept()">수정</a>
+	        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeDept()">삭제</a>
+	   </div>
+</body>
+</html>

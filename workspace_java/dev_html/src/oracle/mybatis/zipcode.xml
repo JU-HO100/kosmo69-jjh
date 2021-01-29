@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.ZipCodeMapper">
+	<select id="getZipCodeList" parameterType="java.lang.String" resultType="java.util.Map"><!-- parametertype 확인 -->
+		SELECT zipcode, zdo, dong, address
+		  FROM zipcode_t
+		 <where>
+		 	<if test='value !=null and value.length>0'>
+		 		and dong LIKE '%'||#{value}||'%'
+		 	</if>
+		 </where>
+	</select>
+	<select id="getAddress" parameterType="java.util.Map" resultType="java.util.Map"><!-- parametertype 확인 -->
+		SELECT zipcode, zdo, dong, address
+		  FROM zipcode_t
+		 <where>
+		 	<if test="zdo != null and zdo.length>0">
+				and zdo = #{zdo}
+			</if>
+		 	<if test='dong !=null and dong.length>0'>
+		 		and dong LIKE '%'||#{dong}||'%'
+		 	</if>
+		 </where>
+	</select>
+	<select id="getZipCodeList2" parameterType="java.lang.String" resultType="web.mvc.ZipCodeVO">
+		SELECT uid_no, zipcode, zdo, dong, address
+		  FROM zipcode_t
+		 <where>
+		 	<if test='dong !=null and dong.length>0'>
+		 		and dong LIKE '%'||#{value}||'%'
+		 	</if>
+		 </where>
+	</select>
+	<select id="getZdo" resultType="java.util.Map">
+		SELECT '전체' zdo FROM dual
+			UNION ALL
+			SELECT zdo
+		FROM (SELECT distinct(zdo) zdo
+				FROM zipcode_t
+				ORDER BY zdo asc) 
+	</select>
+</mapper>
+

@@ -1,0 +1,39 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>네이버 로그인</title>
+<script type="text/javascript" src="https://static.nid.naver.com/js/naverLogin_implicit-1.0.3.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+</head>
+<body>
+ <!-- 네이버아이디로로그인 버튼 노출 영역 -->
+  <div id="naver_id_login" style="width: 150px; height: 50px;"></div>
+  <!-- //네이버아이디로로그인 버튼 노출 영역 -->
+  <script type="text/javascript">
+  		var naver_id_login = new naver_id_login("mIXw97ATW2EK2AyaIVyq", "http://192.168.0.38:9000/loginOkHeader.jsp");
+	  	var state = naver_id_login.getUniqState();
+	  	naver_id_login.setButton("white", 2,40);
+	  	naver_id_login.setDomain("http://192.168.0.38:9000");
+	  	naver_id_login.setState(state);//회원에 대한 정보
+// 	  	naver_id_login.setPopup();
+	  	naver_id_login.init_naver_id_login();
+// 		alert(state);  	
+	  	var naverLogin = new naver.LoginWithNaverId(
+			{
+				clientId: "mIXw97ATW2EK2AyaIVyq",
+// 				callbackUrl: "http://192.168.0.38:9000/member/index.jsp",
+				callbackUrl: "http://192.168.0.38:9000/member/loginOkHearder.jsp",
+				callbackHandle: true
+// 				ispopup:false
+				/* callback 페이지가 분리되었을 경우에 callback 페이지에서는 callback처리를 해줄수 있도록 설정합니다. */
+			}
+		);
+	  		forward.href = response.setAttribute("naver",naver);
+			naverLogin.init();
+			
+  </script>
+</body>
+</html>

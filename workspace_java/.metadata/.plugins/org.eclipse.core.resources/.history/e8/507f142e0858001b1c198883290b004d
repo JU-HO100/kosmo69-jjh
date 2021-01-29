@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script>
+<%
+	String id = request.getParameter("id");
+	String nick = request.getParameter("nick");
+	String loginChk = request.getParameter("loginChk");
+	
+	// 사용자의 로그인 유지 여부를 null 체크로 확인 
+		Cookie c = new Cookie("id", id);
+		c.setMaxAge(60 * 2);
+		c.setPath("/");
+		response.addCookie(c);
+%>
+</body>
+</html>

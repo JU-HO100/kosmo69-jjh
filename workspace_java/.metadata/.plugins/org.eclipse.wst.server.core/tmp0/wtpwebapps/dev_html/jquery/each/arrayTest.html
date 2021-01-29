@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" scr="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style type="text/css">
+	.higt-light1-0 { background: yellow;}
+	.higt-light1-1 { background: blue;}
+	.higt-light1-2 { background: red;}
+	.higt-light1-3 { background: green;}
+	.higt-light1-4 { background: gold;}
+</style>
+</head>
+<body>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			//배열 선언하기
+			var array = [
+				 {name: 'Naver', link: 'http://naver.com'}
+				,{name: 'Daum' , link: 'http://daum.net'}
+				,{name: 'Gogle', link: 'http://gogle.com'}
+			];
+			//실행문이면서 구현부
+			$.each(array,function(index, item){//h1요소 내부 - this->h1
+				var output='';
+				output +='<a href="'+item.link+'">';
+				output +='<h1>'+item.name+'</h1>';
+				output +='</a>';
+				document.body.innerHTML += output;
+			});/////////end of each
+		});/////////////end of ready
+	</script>
+	<a href="./classTest.html">이동</a>
+	<a href="javascript:movePrevious()">이전페이지</a>
+	<a href="javascript:moveNext()">다음페이지</a>
+</body>
+</html>

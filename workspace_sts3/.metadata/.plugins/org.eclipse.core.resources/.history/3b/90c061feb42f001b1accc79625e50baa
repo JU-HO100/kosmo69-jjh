@@ -1,0 +1,41 @@
+#log4.1.2.17
+log4j.rootCategory=info, stdout, file   
+log4j.debug=false
+#com.p6spy.engine.logging.P6LogFactory
+#com.p6spy.engine.spy.appender.StdoutLogger
+#삭제 log4j.appender.stdout=com.p6spy.engine.logging.appender.StdoutLogger   
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout   
+log4j.appender.stdout.ImmediateFlush=true   
+log4j.appender.stdout.Target=System.err   
+   
+log4j.appender.stdout.layout.ConversionPattern=[%d] [%p] (%13F:%L) %3x - %m%n   
+   
+log4j.appender.file.DatePattern = '.'yyyy-MM-dd   
+#emp.xml이나 dept.xml에 있는 namespace 이름을 등록한다.
+log4j.logger.org.mybatis.ZipCodeMapper=TRACE
+log4j.logger.org.mybatis.MemberMapper=TRACE
+log4j.logger.org.mybatis.BbsMapper=TRACE
+log4j.logger.org.mybatis.DeptMapper=TRACE
+log4j.logger.org.mybatis.EmpMapper=TRACE
+log4j.logger.org.mybatis.GoodDayMapper=TRACE
+log4j.appender.file.layout=org.apache.log4j.PatternLayout   
+log4j.appender.file.layout.ConversionPattern=[%d] [%p] (%13F:%L) %3x - %m%n   
+
+## Global logging configuration \u2013 \uC804\uC5ED \uB9AC\uD3EC\uD305 \uB808\uBCA8 \uC124\uC815
+#log4j.rootLogger=ERROR, stdout
+#
+## SqlMap logging configuration\u2026 \u2013 SqlMap \uB9AC\uD3EC\uD305 \uB808\uBCA8 \uC124\uC815
+#log4j.logger.com.ibatis=DEBUG
+#log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG
+#log4j.logger.com.ibatis.common.jdbc.ScriptRunner=DEBUG
+#log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=DEBUG
+#log4j.logger.java.sql.Connection=DEBUG 
+#log4j.logger.java.sql.Statement=DEBUG
+#log4j.logger.java.sql.PreparedStatement=DEBUG
+#log4j.logger.java.sql.ResultSet=DEBUG
+
+log4j.logger.java.sql.Connection=INFO   
+log4j.logger.java.sql.Statement=INFO   
+log4j.logger.java.sql.PreparedStatement=INFO   
+log4j.logger.java.sql.ResultSet=INFO   

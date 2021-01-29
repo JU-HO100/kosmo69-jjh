@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="com.google.gson.Gson" %>  
+<%
+	response.setIntHeader("Refresh",5)
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>카카오 로그인</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+</head>
+<body>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<div id="kakao-login-btn"></div>
+<script type='text/javascript'>
+	var kakaoNick = "";
+	var kakaoMail = "";
+//     <![CDATA[
+   // 사용할 앱의 JavaScript 키를 설정해 주세요.
+   Kakao.init('f61c36ee28b1fe4d00e270bcf75d344d');
+   
+   // 카카오 로그인 버튼을 생성합니다.
+   Kakao.Auth.createLoginButton({
+     container: '#kakao-login-btn',
+     success: function(authObj) {
+//     	 alert(JSON.stringify(authObj));
+
+    	// 세션이 종료된 이후에도 토큰을 유지.
+		persistAccessToken: true,
+		// 세션이 종료된 이후에도 refresh토큰을 유지.
+// 		persistRefreshToken: true,
+		
+//     	로그인 성공시, API를 호출합니다.
+    	Kakao.API.request({
+	 	    url: '/v2/user/me',
+	 	    success: function(response) {
+    	    var user = response.kakao_account //계정 정보
+//     	    user.host = 'kakao'
+    	    kakaoMail = response.kaccount_email;   //유저의 이메일
+    	    kakaoNick = response.properties.nickname; //유저가 등록한 별명
+// 			alert("이름 : "+kakaoNick);
+//     	    session.setAttribute("email",kakaoMail);
+//     	    sessionStorage.setItem("email",kakaoMail);
+// 			session.setAttribute("kakaoNick",kakaoNick);
+//     	    sessionStorage.setItem("kakaoNick",kakaoNick);
+			$.ajax({
+				url:'a.jsp?s_name='+kakaoNick
+					
+			});
+    	    
+    	    },
+    	    fail: function(error) {
+    	        alert("에러1"+JSON.stringify(error));
+    	    }
+    	});
+     		Kakao.Auth.authorize({
+				redirectUri: 'http://192.168.0.38:8000/member/index.np?kakaoNick='+kakaoNick
+// 				redirectUri: 'http://192.168.0.38:8000/member/index.np'
+			});
+    	  },
+    	  fail: function(err) {
+    	  	alert("에러2"+JSON.stringify(err));
+    	  	
+    	  }
+    });
+
+</script>
+<!-- =============================== 카카오 로그인 ================================================== -->
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+<a href="http://developers.kakao.com/logout"></a>
+
+<!-- =============================== 카카오 로그아웃 ================================================== -->
+
+</body>
+</html>

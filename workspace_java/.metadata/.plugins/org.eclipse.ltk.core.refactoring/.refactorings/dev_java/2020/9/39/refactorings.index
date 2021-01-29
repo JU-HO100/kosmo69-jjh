@@ -1,0 +1,40 @@
+1600669877961	Copy compilation units
+1600669894885	Delete elements
+1600679641274	Move compilation units
+1600679645655	Move compilation units
+1600679697295	Move compilation unit
+1600679702946	Move compilation unit
+1600679711570	Move compilation units
+1600679726805	Move compilation unit
+1600679737011	Move compilation unit
+1600679743483	Move compilation unit
+1600822553717	Rename package 'net.tomato'
+1600824757273	Rename compilation unit 'TalkSever.java'
+1600824764395	Rename type 'TalkSeverThread'
+1600912887407	Rename type 'BandSerber'
+1600912907048	Rename package 'net.band_step1'
+1600912925158	Rename package 'net.tomato.step1'
+1600912985243	Delete elements
+1600913001429	Copy compilation units
+1600913020915	Rename type 'TalkClient'
+1600913031383	Rename type 'TalkClientThread'
+1600913062641	Rename type 'TalkServerTest'
+1600913074640	Rename type 'TalkServerThread'
+1600913080238	Delete element
+1600913091826	Copy compilation unit
+1600913100943	Rename type 'TalkServer'
+1600929600897	Copy compilation unit
+1600929616585	Rename type 'LoginForm'
+1600929724248	Copy compilation unit
+1600929737828	Rename type 'MemberShip'
+1600929860918	Copy compilation unit
+1601003127141	Copy compilation units
+1601003209361	Rename type 'BandClient'
+1601003218460	Rename type 'BandClientThread'
+1601003232904	Rename type 'BandServer'
+1601003243228	Rename type 'BandServerThread'
+1601003276119	Copy compilation units
+1601003296840	Rename type 'BandDAO'
+1601003305466	Rename type 'BandMemberShip'
+1601012808190	Rename type 'protocol'
+1601024342607	Delete element

@@ -1,0 +1,13 @@
+package np.com.controller;
+
+
+public class KakaoDao {
+
+	public static KakaoDao getInstance() {
+		
+		
+		
+		return null;
+	}
+
+}

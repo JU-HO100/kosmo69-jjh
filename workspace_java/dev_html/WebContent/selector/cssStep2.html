@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!-- 코딩이 끝나더라도 먼저 예층해 본 후 실행해서 확인 할 것 -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>자손선택자와 후손선택자 구분하기</title>
+<style type="text/css">
+	#section p {color: green;}
+	#header > h1 {color: red;} /* 자손 선택자 */
+	#section   h1 {color: blue;} /* 후손 선택자 */
+</style>
+</head>
+<body>
+	<div id="header">
+		<h1 class="title">네비게이션</h1><!-- red:자손 선택자 -->
+		<div id="nav">
+			<h1>Navigation</h1> <!-- black:자손 선택자는(>) 바로 밑에 까지만 적용 된다. -->
+		</div>
+	</div>
+	<div id="section">
+		<h1 class="title">후손 선택자</h1><!-- blue -->
+   		<p>선택자 소개<h1>선택자 구분하기</h1></p> <!-- blue -->
+	</div>
+</body>
+</html>

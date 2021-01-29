@@ -1,0 +1,15 @@
+<%@ page language="java" contentType="application/json; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.sql.*, java.util.*, web.mvc.*" %>
+<%@ page import="com.google.gson.Gson" %>
+<% 
+	Map<String,Object> pmap = new HashMap<>();
+	String dong = request.getParameter("cols");
+	
+	ZipCodeDao zDao = new ZipCodeDao();
+	List<Map<String,Object>> zList = zDao.getZipCodeList(dong);
+	Gson g = new Gson();
+	String imsi = g.toJson(zList);
+	out.print(imsi);
+	
+%>

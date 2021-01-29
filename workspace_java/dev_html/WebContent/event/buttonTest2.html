@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>버튼 조작 연습</title>
+</head>
+<body>
+	<button id="btn_a">버튼A</button>
+	<button id="btn_b">버튼B</button>
+	<button id="btn_a2">버튼A2</button>
+	<button id="btn_b2">버튼B2</button>
+	<h1>버튼A - <span id="count_a">0</span></h1>
+	<h1>버튼B - <span id="count_b">0</span></h1>
+	<script type="text/javascript">
+		var btnA = document.getElementById('btn_a');
+		var btnB = document.getElementById('btn_b');
+		var countA = document.getElementById('count_a');
+		var countB = document.getElementById('count_b');
+		var btnA2 = document.getElementById('btn_a2');
+		var btnB2 = document.getElementById('btn_b2');
+		var countA2 = document.getElementById('count_a2');
+		var countB2 = document.getElementById('count_b2');
+		//이벤트 연결 하기
+		btnA.onclick = function(){
+			countA.innerHTML = Number(countA.innerHTML)+1;
+		}
+		btnB.onclick = function(){
+			countB.innerHTML = Number(countB.innerHTML)+1;
+		}
+		btnA2.onclick = function(){
+			countA.innerHTML = Number(countA.innerHTML)-1;
+		}
+		btnB2.onclick = function(){
+			countB.innerHTML = Number(countB.innerHTML)-1;
+		}
+	</script>
+</body>
+</html>

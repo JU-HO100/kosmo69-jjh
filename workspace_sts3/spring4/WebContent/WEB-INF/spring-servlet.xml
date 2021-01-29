@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+	<context:component-scan base-package="com.mvc2"/>
+	<context:component-scan base-package="com.mvc3.board"/>
+	
+	<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/book/bookList.sp3">book-Controller</prop>
+				<prop key="/board/boardList.sp3">board-Controller</prop>
+				<prop key="/board/boardInsert.sp3">board-Controller</prop>
+				<prop key="/board/boardUpdate.sp3">board-Controller</prop>
+				<prop key="/board/boardDelete.sp3">board-Controller</prop>
+			</props>
+		</property>
+	</bean>   	
+	<bean id="board-Controller" class="com.mvc3.board.BoardController">
+		<property name="methodNameResolver" ref="board-resolver"/>
+		<property name="boardLogic" ref="board-logic"/>
+	</bean>
+	<bean id="board-resolver" class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+		<property name="mappings">
+			<props>
+				<prop key="/board/boardList.sp3">boardList</prop>
+				<prop key="/board/boardInsert.sp3">boardInsert</prop>
+				<prop key="/board/boardUpdate.sp3">boardUpdate</prop>
+				<prop key="/board/boardDelete.sp3">boardDelete</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>	
+</beans>

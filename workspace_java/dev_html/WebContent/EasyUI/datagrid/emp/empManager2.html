@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>사원관리2</title>
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/themes/color.css">
+<link rel="stylesheet" type="text/css"href="https://www.jeasyui.com/easyui/demo/demo.css">
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.min.js"></script>
+<script type="text/javascript"src="https://www.jeasyui.com/easyui/jquery.easyui.min.js"></script>
+	<style type="text/css">
+		
+		#d_msg {
+			border: 5px solid gold;
+			width: 950px;
+			height: 120px;
+ 			overflow:scroll; 
+			overflow-x:hidden;
+			overflow-y:auto;
+		}
+	</style>	
+	<script type="text/javascript">
+		var v_date;//사용자가 선택한 날자 정보를 담을 변수 선언.
+		//너 조회할거야?
+		function empList(){
+			$("#d_msg").append("empList 호출성공<br>");
+			$("#dg_emp").datagrid({
+			url:"../emp.json"/* 서버의 이전이나 소스의 재사용성을 고려하여 상대결로로 작성할것. */
+			});
+		}
+		//너 등록할거니?
+		function addEmp(){
+			$("#d_msg").append("addEmp 호출성공<br>");
+			$("#dlg_add").dialog({
+				closed:false
+				,modal:false
+			});
+		}
+		//집주소가 바뀌엇니?
+		function editEmp(){
+			$("#d_msg").append("editEmp 호출성공<br>");
+			$("#dlg_edit").dialog({
+				closed:false
+				,modal:true
+			});
+		}
+		//네 정보가 삭제됬네?
+		function removeEmp(){
+			$("#d_msg").append("removeEmp 호출성공<br>");
+			$("#dlg_remove").dialog({
+				closed:false
+				,modal:false
+				
+			});
+			
+		}		
+	</script>
+</head>
+<body>
+<!-- 돔트리가 완료 되었을 때
+태그가 먼저 만들어져야 그 태그에 추가로 태그들을 추가할 수 있으니까 
+ready함수를 호출해서 기존에 태그들을 먼저 스캔하도록 유도한다.
+그다음에는 해당 컴포넌트를 접근해야 한다.
+그런대 여러개의 화면이 공존할 수 있으니까 아이디를 반드시 부여 하자. -구별해야 하니까
+아이디는 $("#아이디")로 선언해야 한다. - 이방식은 jquery의 방식이다.
+왜 꼭 jquery를 써야 하나요?
+document.getElementById("아이디").datagrid({}); 와
+$("#아이디").datagrid({
+	속성이름:'값'
+	,속성이름:'값'
+	(alert()) - 쓸수 있는 영역이 아니다.
+	,onSelect:function(index,row){
+		alert(); -된다
+	}	
+	,onLoadSuccess:function(){
+	},......
+}); 중 어떤것을 쓰는게 더 편할까?
+조금이라도 코드를 줄여야 한다. 왜? 오타를 줄여야 하니까.
+가급적이면 코드를 덜 코치고 그 기능을 반영할 수 있도록 해야 한다. -
+ -->
+<script type="text/javascript">
+//날자를 선택했을 때 대한민국 스타일 변경 YYYY-MM-DD
+//아래 코드는 datebox에 대한 돔 구성이 완료되기 전에 디폴트 포맷 정보를 수정해야 하는 경우 이므로 ready이전에
+//미리 처리합니다.
+	$.fn.datebox.defaults.formatter = function(date){
+		var y = date.getFullYear();
+		var m = date.getMonth()+1;
+		var d = date.getDate();
+		return  y+'-'+(m<10? "0"+m:m)+'-'+(d<10? "0"+d:d);
+	}
+	$.fn.datebox.defaults.parser = function(s){
+		var t = Date.parse(s);
+		if (!isNaN(t)){
+			return new Date(t);
+		} else {
+			return new Date();
+		}
+	}
+	$(document).ready(function(){
+		//여러가지 화면 콤포넌트를 추가할 수도 있음.
+		
+		$('#nb_empno').textbox({
+			icons: [{
+				iconCls:'icon-search',
+				handler: function(e){
+					alert("call")
+				}
+			}]
+		});///////////////////end of textbox/////////////////////////////
+		$('#nb_sal').numberbox({
+			min:0
+			,precision:2
+			,icons: [{
+				iconCls:'icon-search',
+				handler: function(e){
+					alert("sal")
+				}
+			}]
+		});///////////////////end of numberbox/////////////////////////////
+		//datagrid일때
+		$("#dg_emp").datagrid({
+			toolbar:'#tbar_emp'
+		   	,title:"사원관리 시스템"
+			,onSelect: function(index,row){/* index:순번,field:컬럼명,value:값 */
+				$('#tb_empno').textbox('setValue',row.EMPNO);
+				$('#tb_ename').textbox('setValue',row.ENAME);
+				$('#tb_hiredate').textbox('setValue',row.HIREDATE);
+				$('#tb_job').textbox('setValue',row.JOB);
+				$('#tb_sal').textbox('setValue',row.SAL);
+				$('#tb_deptno').textbox('setValue',row.DEPTNO);
+			}
+		   ,columns:[[
+			        {field:'EMPNO'		,title:'사원번호'	,width:100,align:'center'}
+			       ,{field:'ENAME'		,title:'사원이름'	,width:140,align:'center'}
+			       ,{field:'HIREDATE'	,title:'입사날짜'	,width:240,align:'center'}
+			       ,{field:'JOB'		,title:'직업'		,width:140,align:'center'}
+			       ,{field:'SAL'		,title:'연봉'		,width:160,align:'center'}
+			       ,{field:'DEPTNO'		,title:'부서번호'	,width:160,align:'center'}
+			    	]]
+// 		   ,data:[
+// 					{DEPTNO:'89', DNAME:'개발팀', LOC:'천안'}
+// 		   			,{DEPTNO:'88', DNAME:'운영팀', LOC:'강남'}
+// 		   			,{DEPTNO:'87', DNAME:'인사팀', LOC:'서울'}
+// 		 			]
+		});
+
+		//combo일때
+		$("#cb_deptno").combo({
+		
+			
+		});///////////////////// end of combo /////////////////////////
+	});
+</script>
+<!-- 이 페이지에 대한 에러 메세지나 힌트문을 출력하자. -->
+<div id="d_msg"></div>
+<!-- 화면 그리기 시작
+b타입을 권장함
+화면은 직관적인게 좋다. - Tag작성
+UI/UX솔루션이 변경될 때 - 유연하게 대처 할 수 있도록 코딩하기. -SI/SM추천
+이벤트와 제어, 다른 API와의 연계되는 부분 - JS쪽에서 담당하는게 좋다.
+ -->
+<table id="dg_emp" style="width: 1150px; height: 550px">
+</table>
+<div id="tbar_emp">
+		<!-- 테이블 태그를 활용하여 조건 검색하는 화면을 추가하고 그 아래 버튼을 배치하시요. -->
+		<table border="0" width="100%">
+			<!-- 조건 검색 화면 시작 -->
+				<tr>
+					<td>
+					<table border="1">
+						<tr>
+							<td width="280px">
+							<label width="100">사원번호</label>
+							<input id="nb_empno" class="easyui-numberbox" style="width:200px;" value="0">
+							</td>
+							<td width="250px">
+							<label width="100">급여</label>
+							<input id="nb_sal" class="easyui-numberbox" value="0">
+							</td>
+							<td width="300px">
+							<input id="dd_hiredate"	class="easyui-datebox" label="날짜" style="width:200px;" required="required">
+							</td>
+						</tr>
+<!-- combobox추가 시작(위치선택, 공간 확보, 코드추가) 이름|job|부서번호 -->
+						<tr>
+							<td width="280px">
+							<label width="100">이름</label>
+							<select id="cb_box" class="easyui-combobox" name="dept" data-options="paneHeight:auto" style="width:200px; height:25px;">
+						    <option></option>
+							</select>
+							</td>
+<!-- combobox추가 시작 -->
+							<td width="250px">
+							<label width="100">JOB</label>
+							<select id="cb_box" class="easyui-combobox" name="dept" data-options="paneHeight:auto" style="width:200px; height:25px;">
+						    <option></option>
+							</select>
+							</td>
+							<td width="300px">
+							<label width="100">부서번호</label>
+							<select id="cb_box" class="easyui-combobox" name="dept" data-options="paneHeight:auto" style="width:200px; height:25px;">
+						    <option></option>
+							</select>
+							</td>
+						</tr>
+					</table>
+					</td>
+<!-- 					<td> -->
+<!-- 						<input class="easyui-textbox" 	label="사원번호:"> -->
+<!-- 						<input class="easyui-textbox" 	label="사원이름:"> -->
+<!-- 						<input class="easyui-textbox" 	label="입사날짜:"> -->
+<!-- 						<input class="easyui-textbox" 	label="직업:"> -->
+<!-- 						<input class="easyui-textbox" 	label="연봉:"> -->
+<!-- 						<input class="easyui-textbox" 	label="부서번호:"> -->
+<!-- 					</td> -->
+				</tr><!-- &nbsp = 띄어쓰기연산자 -->
+			<!-- 조건 검색화면 끝 -->
+			<!-- 업무관련 시작 -->
+			<tr>
+				<td>
+					<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" plain="true" onclick="empList()">조회</a>
+					<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" 	 plain="true" onclick="addEmp()">입력</a>
+					<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" 	 plain="true" onclick="editEmp()">수정</a>
+					<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeEmp()">삭제</a>
+				</td>
+			</tr>	
+		</table>
+		<!-- 업무관련 끝 -->
+</div>
+<!--  화면 그리기 끝 -->
+<!-- dialog 모달 화면 추가(등록) -->
+<!-- <div id="dlg_add" class="easyui-dialog" data-options="closed:true" style="margin:20px 0; width: 250px; height: 260px;"> -->
+<!-- 	<input id="tb_empno" 	class="easyui-textbox" 	label="사원번호:"> -->
+<!-- 	<input id="tb_ename" 	class="easyui-textbox" 	label="사원이름:"> -->
+<!-- 	<input id="tb_hiredate" class="easyui-textbox" 	label="입사날짜:"> -->
+<!-- 	<input id="tb_job" 		class="easyui-textbox" 	label="직업:"> -->
+<!-- 	<input id="tb_sal" 		class="easyui-textbox" 	label="연봉:"> -->
+<!-- 	<input id="tb_deptno" 	class="easyui-textbox" 	label="부서번호:"> -->
+<!--    </div> -->
+<!-- dialog 모달 화면 추가(수정) -->
+<!-- <div id="dlg_edit" class="easyui-dialog" data-options="closed:true" style="margin:20px 0; width: 250px; height: 260px;"> -->
+<!-- 	<input class="easyui-textbox" 	label="사원번호:"> -->
+<!-- 	<input class="easyui-textbox" 	label="사원이름:"> -->
+<!-- 	<input class="easyui-textbox" 	label="입사날짜:"> -->
+<!-- 	<input class="easyui-textbox" 	label="직업:"> -->
+<!-- 	<input class="easyui-textbox" 	label="연봉:"> -->
+<!-- 	<input class="easyui-textbox" 	label="부서번호:"> -->
+<!--     </div> -->
+<!-- dialog 모달 화면 추가(삭제) -->
+<!-- <div id="dlg_remove" class="easyui-dialog" data-options="closed:true" style="margin:20px 0; width: 200px; height: 120px;"> -->
+<!-- 	<input class="easyui-textbox" 	label="사원번호:"> -->
+<!--     </div> -->
+</body>
+</html>

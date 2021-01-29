@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>제이쿼리 멤버십</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+	function add(){
+		$("#f_member").attr("method","get");
+		$("#f_member").attr("action","memberShipAction.jsp")
+		$("#f_member").submit();
+	}
+	function add2(){
+		location.href="memberShipAction.jsp";
+		
+	}
+</script>
+</head>
+<body>
+<form id="f_member">
+<table align="center" border="1" bordercolor="red" width="500">
+	<tr>
+		<th width="150">아이디 : </th>
+		<th width="350">
+		<input type="text" size="15">
+		<div id="d_id"></div>
+		</th>
+	</tr>
+	<tr>
+		<th width="150">이름 : </th>
+		<th width="350">
+		<input type="text" size="15">
+		<div id="d_name"></div>
+		</th>
+	</tr>
+	<tr>
+		<th width="150">비밀번호 : </th>
+		<th width="350">
+		<input type="text" size="15>
+		<div id="d_pw"></div>
+		</th>
+	</tr>
+	<tr>
+		<th width="150">비밀번호 확인 : </th>
+		<th width="350">
+		<input type="text" size="15">
+		<div id="d_pw_check"></div>
+		</th>
+	</tr>
+	<tr>
+		<th width="100%" colspan="2" align="center">
+		<button onClick="add()">가입</button>
+		<button onClick="cancel()">취소</button>
+		</th>
+	</tr>
+</table>
+</form>
+</body>
+</html>

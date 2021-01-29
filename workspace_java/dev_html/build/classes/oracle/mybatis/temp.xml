@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="oracle.mybatis.TempMapper">
+	<select id="getTempList"  resultType="map">
+		  SELECT W_DATE,  LOCATION, AVGTEMP, MINTEMP, MAXTEMP
+		  FROM WEATHER_DATA
+		 ORDER BY W_DATE DESC
+	</select>
+	<select id="getConTempList"  resultType="map">
+
+	</select>
+	<select id="getCalTempList"  parameterType="map" resultType="map">
+		SELECT  TO_CHAR(TO_DATE(W_DATE),'YYYY') as "YEAR"
+				<if test="sMonth!=null and eMonth!=null">
+	 					, TO_CHAR(TO_DATE(W_DATE),'MM') as "MONTH"
+ 				</if>
+				<choose>
+		  				  <when test= "gubun=='MIN'">
+								, MIN (MINTEMP) as "MINTEMP"
+		  				  </when>
+		  				  <when test="gubun=='MAX'">
+								, MAX (MAXTEMP) as "MAXTEMP"
+		  				  </when>
+		  				   <when test="gubun=='AVG'">
+								, ROUND(AVG (AVGTEMP),1) as "AVGTEMP" 
+		  				  </when>
+				</choose>
+ 			FROM WEATHER_DATA
+ 			<where>
+			 			<if test="sYear==null">
+				 				W_DATE LIKE #{eYear}||'%'
+			 			</if>
+			 			<if test="sYear!=null and eMonth==null">
+			 					TO_CHAR(TO_DATE(W_DATE),'YYYY') BETWEEN #{sYear} AND #{eYear}
+			 			</if>
+			 			<if test="sMonth!=null and eMonth!=null">
+				 				TO_CHAR(TO_DATE(W_DATE),'YYYY') BETWEEN #{sYear} AND #{eYear} AND TO_CHAR(TO_DATE(W_DATE),'MM') BETWEEN #{sMonth} AND #{eMonth}
+			 			</if>
+ 			</where>
+		    GROUP BY TO_CHAR(TO_DATE(W_DATE),'YYYY')
+					<if test="sMonth!=null and eMonth!=null">
+		 			, TO_CHAR(TO_DATE(W_DATE),'MM')
+	 				</if>
+	 		ORDER BY TO_CHAR(TO_DATE(W_DATE),'YYYY') DESC
+	</select>
+	<select id="getYearList"  resultType="map">
+		   SELECT DISTINCT SUBSTR(W_DATE, 1, 4) AS YEAR
+ 			 FROM WEATHER_DATA
+ 			 ORDER BY YEAR DESC
+	</select>
+</mapper>

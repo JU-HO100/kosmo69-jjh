@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="board-logic" class="com.board.BoardLogic">
+		<property name="sqlBoardMDao" ref="sql-board-mdao"/>	
+		<property name="sqlBoardDDao" ref="sql-board-ddao"/>	
+	</bean>
+	<bean id="member-logic" class="com.spring.mvc1.MemberLogic">
+		<property name="sqlMemberDao" ref="sql-member-dao"/>	
+	</bean>
+</beans>

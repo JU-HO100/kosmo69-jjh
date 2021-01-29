@@ -1,0 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	String s_name = (String)session.getAttribute("s_name");
+%>    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>b페이지</title>
+</head>
+<body>
+빈 페이지
+이름은 : <%=s_name %>
+
+</body>
+</html>

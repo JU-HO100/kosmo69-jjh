@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	<bean id="stv" class="com.ch3.SamsungTV"/>
+	<bean id="lgtv" class="com.ch3.LGTV"/>
+	<bean id="helloBean" class="com.ch3.HelloBeanImpl" scope="singleton" init-method="initMethod" destroy-method="destroyMethod">
+		<property name="msg">
+			<value>Hello World</value>
+		</property>
+	</bean>
+</beans>
