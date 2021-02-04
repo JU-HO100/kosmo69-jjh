@@ -1,0 +1,71 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_likes(
+  field IN varchar2,
+  board_no IN number,
+  user_id IN varchar2,
+  msg OUT varchar2
+)
+IS
+    cnt number;
+    popular_board_commit number;
+    popular_board_check number;
+    e_field_not_found EXCEPTION; -- 예외처리를 위해 변수선언
+
+BEGIN  
+
+
+    IF (field IN('CHECK_LIKE')) THEN  
+        SELECT count(*) into msg FROM likes WHERE menucd = board_no AND m_id = user_id;
+        
+    ELSIF(field IN ('ALL_LIKES')) THEN  
+        SELECT count(*) into msg FROM likes WHERE menucd = board_no ; 
+        
+    ELSIF(field IN ('CLICK_LIKE')) THEN
+        SELECT count(*) into cnt FROM likes WHERE menucd = board_no AND m_id = user_id;--내가 좋아요를 눌렀는지 안눌렀는지 체크
+        SELECT count(*) into popular_board_commit FROM likes WHERE menucd = board_no;--트랜잭션 처리를 위한 dml, 좋아요가 10개 이상이면 인기게시물 등록 10개 아래로 떨어지면 인기게시에서물 삭제
+        IF(cnt=0) THEN
+            insert into likes values(board_no, user_id,to_char(sysdate,'yyyy-mm-dd hh24:mi'));
+            
+            msg:='좋아요를 눌렀습니다';
+            
+            IF(popular_board_commit>9) THEN    --게시물의 좋아요가 10개 이상인경우
+            
+                SELECT count(*) INTO popular_board_check FROM POPULAR_RECIPE WHERE menucd=board_no; --인기 게시물에 등록되어있는지 체크
+                
+                IF(popular_board_check=0) THEN  --인기 게시물에 없니?
+                    INSERT INTO POPULAR_RECIPE VALUES(POPULAR_RECIPE_SEQ.nextval,board_no); --인기 게시물 등록
+                END IF;
+                
+            END IF;
+            
+            commit;
+    
+        ELSE
+            delete from likes where menucd = board_no and m_id = user_id;
+            
+            msg:='좋아요를 취소하셨습니다';
+            
+            IF(popular_board_commit<10) THEN    --게시물의 좋아요가 10개 아래인 경우
+            
+                SELECT count(*) INTO popular_board_check FROM POPULAR_RECIPE WHERE menucd=board_no;
+                
+                IF(popular_board_check>0) THEN  --인기 게시물에 등록되어 있니?
+                    DELETE FROM POPULAR_RECIPE WHERE menucd=board_no;   --인기 게시물에서 삭제
+                END IF;
+                
+            END IF;
+            
+            commit;
+            
+        END IF;
+    ELSE
+     raise e_field_not_found; 
+     END IF;
+     
+   SYS.dbms_output.put_line(msg);   --담긴 메시지 보기
+ 
+  EXCEPTION -- 예외 처리
+    WHEN e_field_not_found THEN
+      msg:='field 명이 부적절 합니다.';
+      ROLLBACK;
+END;
+/

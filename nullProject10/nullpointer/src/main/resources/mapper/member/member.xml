@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="np.mem.mybatis.MemberMapper"> 
+  <resultMap id="memberMap" type="hashmap"/>
+<!-- 로그인 -->
+ <select id="proc_mem_login" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+ 	{ call proc_mem_login(
+ 		#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_pw,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=memberMap}
+ 	)}
+ </select> 
+
+<!-- 회원가입, 가입중 id중복검사, 닉네임 중복검사 -->
+ <select id="proc_Regi" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+ 	{ call proc_regi(
+ 		#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_pw,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_zip,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_hp,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_name,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_nick,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_gender,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_birth,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_mail,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+ 	)}
+ </select> 
+ 
+ <!-- 회원탈퇴 -->
+  <select id="proc_mem_withdrawal" parameterType="map" statementType="CALLABLE">
+ 	{ call proc_mem_withdrawal(
+ 		#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{m_pw,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+ 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+ 	)}
+  </select>
+  
+   <!-- 회원정보수정하기 -->
+     <select id="proc_mem_update" parameterType="map" statementType="CALLABLE">
+        { call proc_mem_update(
+            	#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{m_pw,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{c_pw,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{c_zip,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{c_hp,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{c_nick,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{c_mail,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+            )}
+    </select>
+ 	
+ 	   <!-- id, pw 찾기 -->
+ 	 <select id="proc_idpw_search" parameterType="map" statementType="CALLABLE">
+        { call proc_idpw_search(
+            	#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+            	,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{m_hp,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 		,#{m_mail,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+                ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=memberMap}
+            )}
+    </select>
+ 
+	 <!-- 셰프 양식서 제출, (인기게시글 3개 이상, 3개미만) 출력 -->
+	 <select id="proc_chef_resume" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+	 	{ call proc_chef_resume(
+	 	           	#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 				,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			 		,#{main_food,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			 		,#{writting,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	 </select> 
+ 
+	 <!-- 회원신고 -->
+	 <select id="proc_mem_report" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+	 	{ call proc_mem_report(
+		 	 #{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+		 	,#{user_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+			,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	 </select>
+ 
+  	   <!-- 셰프랭킹, 셰프의 게시글 -->
+ 	 <select id="proc_chef_list" parameterType="map" statementType="CALLABLE">
+        { call proc_chef_list(
+            	#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+            	,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+                ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=memberMap}
+            )}
+    </select>
+ 
+  <!-- 마이페이지, 나의 쿠킹클래스 체크-->
+     <select id="proc_check_mypage" parameterType="map" statementType="CALLABLE">
+        { call proc_check_mypage(
+	            #{field, mode=IN,  jdbcType=VARCHAR, javaType=java.lang.String}
+	            ,#{m_id, mode=IN,  jdbcType=VARCHAR, javaType=java.lang.String}
+	            ,#{csr,  mode=OUT, jdbcType=CURSOR,  javaType=ResultSet, resultMap=memberMap}
+            )}
+    </select>
+
+		 <!-- 셰프 체크용 -->
+  <select id="proc_chef_Check" parameterType="map" statementType="CALLABLE">
+    { call proc_chef_Check(
+       #{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+       ,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+    )}
+  </select>
+    
+
+
+
+
+</mapper>

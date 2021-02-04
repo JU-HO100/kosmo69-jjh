@@ -1,0 +1,91 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_mem_withdrawal
+(
+    user_id IN varchar2,
+   user_pw IN varchar2,
+    msg OUT varchar2
+)
+IS
+
+    imsi varchar2(500);
+    thiCnt number;
+    secCnt number;
+    cnt number;    
+    e_wrong_info EXCEPTION;
+BEGIN       
+
+     SELECT count(*) into cnt from member where m_id=user_id and m_pw = user_pw;      
+        IF (cnt>0) THEN  
+            
+            SELECT count(*) INTO secCnt FROM cooking_register WHERE m_id=user_id;
+            
+            --쿠킹클래스에 등록되어 있니?
+            IF(secCnt>0) THEN   -- yes
+            
+                --일단 셰프든 회원이든 지우기
+                DELETE FROM cooking_register WHERE m_id=user_id;
+                
+                --delete 된것이 셰프면 1 출력될 것이고 셰프가 아니면 0이 출력될 것임
+                SELECT count(*) INTO thiCnt FROM(
+                SELECT c_classcd, max(rgreport) rgreport FROM cooking_register group by c_classcd) a WHERE a.rgreport !=3;
+                
+                if(thiCnt>0) THEN   -- 셰프였다면?
+                
+                    --3(셰프)이 없는 register 테이블의 c_classcd(클래스 번호) 다 지우기
+                    delete from cooking_register
+                    where c_classcd not in (
+                        select c_classcd
+                        from cooking_register
+                        group by c_classcd, rgreport
+                        having rgreport = 3
+                    );
+                    
+                    --register 에 없는 쿠킹클래스 지우기
+                    DELETE FROM cooking_class 
+                    WHERE c_classcd not in(
+                        SELECT cc.c_classcd 
+                        FROM cooking_class cc 
+                        INNER JOIN cooking_register cr 
+                        ON cr.c_classcd = cc.c_classcd 
+                        GROUP BY cc.c_classcd
+                    );
+                    
+                    
+                END IF;
+                
+                
+                
+            END IF;
+            
+            
+            SELECT count(*) INTO secCnt FROM chef_register;
+            
+            --셰프 양식서에 등록 해놨니?
+            IF(secCnt>0)   THEN --yes
+                DELETE FROM chef_register WHERE m_id=user_id;
+            END IF;
+            
+            
+            UPDATE member
+               SET m_name='탈퇴한회원'
+                   ,m_zip='- -'
+                   ,m_birth='1000-00-00'
+                   ,m_gender=-1
+                   ,m_day ='0000-00-00'
+                   ,m_mail='-'
+                   ,m_pw='12#$27f22545$'
+                   ,chef_apply=-1
+                   ,m_like=-1
+             WHERE m_id=user_id and m_pw=user_pw;
+            
+            commit;
+            
+            msg:='정상적으로 탈퇴되었습니다';
+        ELSE
+            raise e_wrong_info;        
+        END IF;   
+        
+    EXCEPTION
+    WHEN e_wrong_info THEN
+       msg:='회원정보가 틀렸습니다';
+END;
+/

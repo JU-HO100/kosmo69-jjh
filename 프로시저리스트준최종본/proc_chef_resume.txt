@@ -1,0 +1,80 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_chef_resume(
+  field IN varchar2,
+  user_id IN varchar2,
+  chef_main IN chef_register.main_food%TYPE,
+  introducing IN chef_register.writting%TYPE,
+  msg OUT varchar2
+)
+IS
+  cnt number;
+  chef_check number;
+  introByte number;
+  e_id_aldy_chef EXCEPTION; -- 예외처리를 위해 변수선언
+  e_id_applying EXCEPTION;
+
+BEGIN  
+
+    SELECT count(*) cnt INTO cnt FROM popular_recipe pr INNER JOIN RECIPE r ON r.menucd = pr.menucd WHERE r.m_id=user_id;
+    
+    
+    IF(field IN ('POP_RECIPE_NUM')) THEN    --나의 인기게시물이 몇개인지?
+        IF(cnt>2) THEN
+            msg:='3개이상';
+        ELSE
+            msg:='3개미만';
+        END IF;
+    
+    ELSIF(field IN ('SUBMIT_RESUME')) THEN
+    
+        IF(cnt>2) THEN
+        
+            --셰프 신청중인 상태
+            SELECT chef_apply into chef_check FROM member WHERE m_id=user_id;
+            
+            IF(chef_check = 2) THEN
+                raise e_id_aldy_chef;
+            ELSIF(chef_check=1) THEN
+                raise e_id_applying;
+            ELSE
+                --유효성 검사를 위한 자기소개서 문자열의 바이트량
+                SELECT lengthb(introducing) INTO introByte FROM dual;
+                
+                IF(introByte > 13) THEN
+                    INSERT INTO chef_register VALUES(user_id,introducing,chef_main);
+                    
+                    UPDATE MEMBER
+                       SET
+                           chef_apply=1
+                     WHERE m_id = user_id;
+                     
+                    msg:='셰프 신청이 완료 되었습니다';
+                    commit;
+                    
+                ELSE
+                    msg:='자기소개서는 14 Byte 이상 작성하셔야 합니다';
+                    return;
+                END IF;
+
+            END IF;
+        ELSE
+            msg:='인기 게시물이 3개미만인 회원은 신청할 수 없습니다';
+            return;
+        END IF;
+
+        
+    END IF;
+
+
+  EXCEPTION -- 예외 처리
+    WHEN e_id_aldy_chef THEN
+      msg:='이미 셰프인 회원입니다';
+      ROLLBACK;
+      return;
+      
+    WHEN e_id_applying THEN
+      msg:='셰프 신청 중인 상태입니다';
+      ROLLBACK;
+      return;
+
+END;
+/

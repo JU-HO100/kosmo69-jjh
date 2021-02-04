@@ -1,0 +1,59 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_chart_for
+(
+   field IN varchar2,
+   csr OUT sys_refcursor -- 커서로 반환
+)
+IS
+BEGIN       
+    IF(field IN ('LARGE')) THEN
+        OPEN csr FOR
+            SELECT m_cate.category "대분류", sum(m_like.cnt) "좋아요", RANK() OVER (ORDER BY sum(m_like.cnt) DESC)  "랭킹" 
+            FROM 
+                (SELECT m.menucd, mc.category, fc.foodgroup
+                FROM menu m
+                INNER JOIN
+                menu_category mc
+                ON m.categorycd = mc.categorycd
+                INNER JOIN
+                food_category fc
+                ON m.foodcategorycd = fc.foodcategorycd
+                ) m_cate
+            INNER JOIN
+                (SELECT r.menucd menucd, nvl(i_like.cnt,0) cnt
+                FROM recipe r
+                INNER JOIN 
+                    (
+                        SELECT menucd,count(*) cnt FROM likes group by menucd
+                    ) i_like
+                ON r.menucd = i_like.menucd(+)) m_like
+            ON m_cate.menucd = m_like.menucd
+            GROUP BY m_cate.category
+            ORDER BY "랭킹" asc;
+            
+     ELSIF(field IN ('SMALL')) THEN
+        OPEN csr FOR
+            SELECT m_cate.foodgroup "소분류",  sum(m_like.cnt) "좋아요", RANK() OVER (ORDER BY sum(m_like.cnt) DESC)  "랭킹"
+            FROM 
+                (SELECT m.menucd, mc.category, fc.foodgroup
+                FROM menu m
+                INNER JOIN
+                menu_category mc
+                ON m.categorycd = mc.categorycd
+                INNER JOIN
+                food_category fc
+                ON m.foodcategorycd = fc.foodcategorycd
+                ) m_cate
+            INNER JOIN
+                (SELECT r.menucd menucd, nvl(i_like.cnt,0) cnt
+                FROM recipe r
+                INNER JOIN 
+                    (
+                        SELECT menucd,count(*) cnt FROM likes group by menucd
+                    ) i_like
+                ON r.menucd = i_like.menucd(+)) m_like
+            ON m_cate.menucd = m_like.menucd
+            GROUP BY m_cate.foodgroup
+            ORDER BY "랭킹" asc;
+     END IF;
+END;
+/

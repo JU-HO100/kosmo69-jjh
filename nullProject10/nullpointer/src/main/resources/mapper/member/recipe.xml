@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="np.mem.mybatis.RecipeMapper">
+	<resultMap id="recipeMap" type="hashmap"/>
+<!-- 글 쓰기 -->
+	<select id="proc_board_insert" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+	 	{ call proc_board_insert(
+	 		#{category,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{foodgroup,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{foodname,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{main_img,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{recipe_info,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{sub_img,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{jaelyo,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{weight,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{unit,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{hashtag,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	</select> 
+	
+
+	<!-- 글 수정 -->
+	<select id="proc_board_update" parameterType="map" statementType="CALLABLE"> 
+	 	{ call proc_board_update(
+	 		#{menucd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{category,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{foodgroup,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{foodname,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{main_img,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{recipe_info,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{sub_img,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{jaelyo,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{weight,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{unit,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{hashtag,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	</select> 
+	
+	<!-- 글 삭제 -->
+	<select id="proc_board_delete" parameterType="map" statementType="CALLABLE"> 
+	 	{ call proc_board_delete(
+	 		#{menucd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	</select> 
+	
+   <!-- 게시물 검색 -->
+    <select id="proc_board_search" parameterType="map" statementType="CALLABLE"> 
+       { call proc_board_search(
+          #{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+          ,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+          ,#{keyword,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+          ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=recipeMap}
+       )}
+    </select> 
+	<!-- 게시글 목록, 인기게시글 목록,단일게시글 보여주기 -->
+	 <select id="proc_board_list" parameterType="map" statementType="CALLABLE"> 
+	 	{ call proc_board_list(
+	 		#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{menucd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=recipeMap}
+	 	)}
+ 	</select> 
+	
+	<!-- 보드에 필요한 리스트 보여주기 (대분류, 소분류, 재료리스트)-->
+	 <select id="proc_board_give_info" parameterType="map" statementType="CALLABLE"> 
+	 	{ call proc_board_give_info(
+	 		#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{keyword,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=recipeMap}
+	 	)}
+ 	</select> 
+ 	
+ 	<!-- 좋아요관련 -->
+	<select id="proc_board_likes" parameterType="map" statementType="CALLABLE"> 
+	 	{ call proc_board_likes(
+	 		#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{menucd,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{msg,mode=OUT,jdbcType=VARCHAR, javaType=java.lang.String}
+	 	)}
+	</select> 
+
+
+<!-- 차트 출력용 -->
+ <select id="proc_chart_for" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+    { call proc_chart_for(
+    	#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+       ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=memberMap}
+    )}
+ </select> 
+ 
+ <!-- 워드클라우드 출력용 -->
+	 <select id="proc_wordcloud" parameterType="map" statementType="CALLABLE"> <!-- 타입에는 추상클래스, 그리고 경로까지 적어주는게 원칙 -->
+	 	{ call proc_wordcloud(
+	 		#{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	 		,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=recipeMap}
+	 	)}
+	 </select> 
+</mapper>

@@ -1,0 +1,16 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_chef_Check
+(
+    user_id IN varchar2
+   ,msg OUT varchar2
+)
+IS
+    cnt number;
+BEGIN       
+    SELECT count(*) INTO cnt FROM member WHERE chef_apply=2 and m_id = user_id;
+    IF(cnt>0) THEN
+            SELECT m_id INTO msg FROM member WHERE chef_apply=2 and m_id = user_id;
+    ELSE
+        msg:='셰프로 등록되어 있는 유저만 사용할 수 있습니다';
+    END IF;
+END;
+/

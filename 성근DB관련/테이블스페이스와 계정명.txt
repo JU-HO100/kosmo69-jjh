@@ -1,0 +1,2 @@
+TableSpace 이름 : NULLPOINT
+계정명 : TEAM_NULLPOINT

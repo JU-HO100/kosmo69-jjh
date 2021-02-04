@@ -1,0 +1,52 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_mem_report
+(
+my_id IN varchar2
+,user_id IN varchar2
+,msg OUT varchar2)
+IS
+    loginCheck number;
+    cnt number;
+    e_need_login EXCEPTION;
+    e_can_not_report EXCEPTION;
+BEGIN
+
+    SELECT count(*) INTO loginCheck FROM member WHERE m_id = my_id;
+    
+    IF(loginCheck>0) THEN
+    
+        IF(my_id != user_id) THEN
+            SELECT count(*) INTO cnt FROM blist WHERE m_id=user_id;
+        
+            IF(cnt>0) THEN
+                UPDATE blist
+                SET report=report+1
+                WHERE m_id=user_id;
+                
+                msg:='해당 회원을 신고 하였습니다';
+                
+            ELSIF(cnt=0) THEN    
+                 INSERT INTO blist VALUES(user_id, 0, 1); 
+                 msg:='해당 회원을 신고 하였습니다';
+            END IF;
+            
+            commit;
+        ELSE
+            raise e_can_not_report;
+        END IF;
+    
+    ELSE 
+        raise e_need_login;
+    END IF;
+    
+
+    EXCEPTION
+       WHEN e_need_login THEN
+            msg:='로그인 후 사용가능합니다';
+            return;
+            
+        WHEN e_can_not_report THEN
+            msg:='본인은 신고가 불가능 합니다';
+            return;     
+            
+END;
+/

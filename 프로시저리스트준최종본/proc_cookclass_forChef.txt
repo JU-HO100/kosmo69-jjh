@@ -1,0 +1,163 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_cookclass_forChef
+(
+    field IN varchar2
+    ,my_chef_id IN varchar2
+    ,p_cookclassno IN number
+    ,user_id IN varchar2
+    ,csr OUT sys_refcursor
+)
+IS
+    compareMem number;
+    maxMem number;
+    myClassmemCheck number;
+    cnt number;
+    status EXCEPTION;
+    e_field_not_found EXCEPTION;
+BEGIN
+
+
+
+    IF(field IN ('SHOW_APPLY_USERS')) THEN
+    
+        SELECT count(*) INTO cnt FROM member WHERE m_id=my_chef_id and chef_apply=2;            -- 셰프인지 체크
+        
+        IF(cnt>0) THEN
+            --내 쿠킹클래스 신청한 회원 목록 보기
+            OPEN csr FOR
+              SELECT c_classcd, m_id, rgreport, chef_id
+              FROM(
+                  SELECT chef.c_classcd, nvl(mem.m_id,'신청한 회원이 없습니다') m_id, nvl(mem.rgreport,'회원대기중') rgreport, chef.m_id as chef_id
+                    FROM(
+                        SELECT i_mem.c_classcd, i_mem.m_id, i_mem.rgreport FROM
+                        (SELECT m_id, DECODE(rgreport,0,'신청',1,'수락',2,'반려') rgreport, c_classcd  FROM cooking_register WHERE rgreport != 3) i_mem
+                        INNER JOIN cooking_class cc ON cc.c_classcd  = i_mem.c_classcd) mem
+                    RIGHT JOIN
+                        (SELECT i_chef.c_classcd, i_chef.m_id FROM
+                        (SELECT m_id, c_classcd  FROM cooking_register WHERE rgreport = 3) i_chef
+                        INNER JOIN cooking_class cc ON cc.c_classcd = i_chef.c_classcd) chef
+                    ON mem.c_classcd = chef.c_classcd
+                    WHERE chef.m_id = my_chef_id
+                    AND   chef.c_classcd = p_cookclassno
+                    ORDER BY mem.c_classcd);
+                
+        ELSE
+            raise status;
+        END IF;
+    
+    ELSIF(field IN ('ACCEPT_MYCLASS')) THEN
+    
+        --내가 주체중인 쿠킹클래스의 최대정원 maxMem 담기
+         SELECT cc.c_member INTO maxMem FROM
+               (SELECT m_id, c_classcd  FROM cooking_register WHERE rgreport = 3) chef
+               INNER JOIN cooking_class cc ON CC.C_CLASSCD = chef.c_classcd
+               WHERE m_id = my_chef_id and chef.c_classcd = p_cookclassno;
+    
+        --내가 주체중인 쿠킹클래스에서 수락한 회원 compareMem 담기 
+         SELECT count(*) into compareMem FROM
+               (SELECT DECODE(rgreport,0,'신청',1,'수락',2,'반려') rgreport, c_classcd  FROM cooking_register WHERE rgreport != 3) mem
+               INNER JOIN cooking_class cc ON CC.C_CLASSCD = mem.c_classcd
+               WHERE rgreport = '수락' and mem.c_classcd = p_cookclassno;
+               
+        --최대정원과 현재정원 비교     
+        IF(compareMem>maxMem) THEN
+            OPEN csr FOR
+                    SELECT '정원이 꽉 찼습니다' msg FROM dual;
+        ELSE
+        
+        SELECT count(*) INTO myClassmemCheck FROM cooking_register WHERE m_id=user_id and c_classcd=p_cookclassno and rgreport = 0; --내 쿠킹클래스에 신청회원 존재하는지 체크
+        
+        IF(myClassmemCheck>0) THEN
+             SELECT count(*) into cnt
+              FROM(
+                  SELECT i_mem.c_classcd, i_mem.m_id, i_mem.rgreport FROM
+                  (SELECT m_id, DECODE(rgreport,0,'신청',1,'수락',2,'반려') rgreport, c_classcd  FROM cooking_register WHERE rgreport != 3) i_mem
+                  INNER JOIN cooking_class cc ON CC.C_CLASSCD = i_mem.c_classcd) mem
+                  INNER JOIN
+                  (SELECT i_chef.c_classcd, i_chef.m_id, i_chef.rgreport FROM
+                  (SELECT m_id, DECODE(rgreport,3,'셰프') rgreport, c_classcd  FROM cooking_register WHERE rgreport = 3) i_chef
+                  INNER JOIN cooking_class cc ON CC.C_CLASSCD = i_chef.c_classcd) chef
+                  ON mem.c_classcd = chef.c_classcd
+              WHERE chef.m_id = my_chef_id and mem.m_id=user_id
+           ORDER BY mem.c_classcd;
+        
+                IF(cnt>0) THEN
+                
+                     UPDATE cooking_register
+                       SET rgreport =1
+                     WHERE m_id=user_id
+                       AND c_classcd=p_cookclassno;
+                     
+                     commit;
+                     
+                     OPEN csr FOR
+                        SELECT '선택한 회원을 쿠킹클래스에 등록시켰습니다' msg FROM dual;
+                ELSE
+                     OPEN csr FOR
+                        SELECT '선택한 회원이 쿠킹클래스에 존재하지 않습니다' msg FROM dual;
+                END IF;
+            ELSE
+                OPEN csr FOR
+                      SELECT '신청대기중인 회원이 존재하지 않습니다' msg FROM dual;
+            END IF;
+        END IF;
+        
+        
+
+
+    ELSIF(field IN ('DENY_MYCLASS')) THEN
+    
+        SELECT count(*) INTO myClassmemCheck FROM cooking_register WHERE m_id=user_id and c_classcd=p_cookclassno and rgreport = 0; --내 쿠킹클래스에 신청회원 존재하는지 체크
+        
+            IF(myClassmemCheck>0) THEN
+                 SELECT count(*) into cnt
+                  FROM(
+                      SELECT i_mem.c_classcd, i_mem.m_id, i_mem.rgreport FROM
+                      (SELECT m_id, DECODE(rgreport,0,'신청',1,'수락',2,'반려') rgreport, c_classcd  FROM cooking_register WHERE rgreport != 3) i_mem
+                      INNER JOIN cooking_class cc ON CC.C_CLASSCD = i_mem.c_classcd) mem
+                      INNER JOIN
+                      (SELECT i_chef.c_classcd, i_chef.m_id, i_chef.rgreport FROM
+                      (SELECT m_id, DECODE(rgreport,3,'셰프') rgreport, c_classcd  FROM cooking_register WHERE rgreport = 3) i_chef
+                      INNER JOIN cooking_class cc ON CC.C_CLASSCD = i_chef.c_classcd) chef
+                      ON mem.c_classcd = chef.c_classcd
+                  WHERE chef.m_id = my_chef_id and mem.m_id=user_id
+               ORDER BY mem.c_classcd;
+            
+                IF(cnt>0) THEN
+                
+                    UPDATE cooking_register
+                       SET rgreport =2
+                     WHERE m_id=user_id
+                      AND c_classcd=p_cookclassno;
+                      
+                      commit;
+                 
+                    OPEN csr FOR
+                        SELECT '선택한 회원을 쿠킹클래스에서 거절하였습니다' msg FROM dual;
+                    
+                ELSE
+                    OPEN csr FOR
+                        SELECT '선택한 회원이 쿠킹클래스에 존재하지 않습니다' msg FROM dual;
+                END IF;
+            ELSE
+                OPEN csr FOR
+                  SELECT '신청대기중인 회원이 존재하지 않습니다' msg FROM dual;
+            END IF;
+
+            
+    ELSE
+        raise e_field_not_found;
+    END IF;
+    
+    
+        
+
+    EXCEPTION
+       WHEN status THEN
+            OPEN csr FOR
+                SELECT '셰프인 회원만 이용 가능합니다' msg FROM dual;
+                rollback;
+                return;
+       WHEN e_field_not_found THEN
+             SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다');
+END;
+/

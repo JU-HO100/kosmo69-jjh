@@ -1,0 +1,42 @@
+CREATE OR REPLACE FUNCTION TEAM_NULLPOINT.func_split (str IN VARCHAR, del IN VARCHAR,  idx IN INTEGER)
+RETURN CHAR IS
+/***************************************
+abc:de:fghi 를 구분자(:)를
+기준으로 idx번째 데이터를 가져옴
+만약 해당 데이터가 없다면 null
+****************************************/
+temp_idxst INTEGER; --시작
+temp_idxed INTEGER; --끝
+temp_leng INTEGER;  --길이
+temp_limit INTEGER;
+cnt INTEGER;
+codersb VARCHAR2(100);
+BEGIN
+  codersb := '';
+  temp_limit := length(str);
+  cnt := 0;
+  temp_idxst := 1;
+  temp_idxed := 1;
+ 
+  for cnt IN 1..idx loop
+      temp_idxed := instr(str, del, temp_idxst);
+     
+      -- 구분자를 찾을수 없을때(마지막데이터임)
+      if temp_idxed = 0  then 
+        temp_idxed := temp_limit + 1;
+      end if;
+      temp_leng  := temp_idxed - temp_idxst;
+     
+      -- 해당 index라면 codersb값을 세팅해줌
+      if cnt = idx then
+        codersb := substr(str,temp_idxst, temp_leng);
+      end if;
+     
+      -- 시작 index를 갱신
+      temp_idxst := temp_idxed + 1;
+  end loop;
+
+ 
+  RETURN codersb;
+END func_split;
+/

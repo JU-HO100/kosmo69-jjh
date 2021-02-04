@@ -1,0 +1,62 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_wordcloud(
+  field IN varchar2,
+  user_id IN varchar2,
+  cloud_csr OUT SYS_REFCURSOR
+)
+IS
+    cnt number;
+    cols varchar2(500);
+    e_field_not_found EXCEPTION;
+    e_no_id_exist EXCEPTION;
+
+BEGIN  
+--select to_char(sysdate,'yyyy-mm') || '-01' as 이번달시작일 
+--,to_char(LAST_DAY(sysdate),'yyyy-mm-dd') as 이번달마지막일 from dual;
+
+--select to_char(add_months(sysdate,-1),'yyyy-mm-dd') as 한달전 from dual;
+
+
+    IF (field IN('GENERAL_WORDCLOUD','MY_WORDCLOUD')) THEN  
+        
+        cols:='SELECT keyword, sum(keycount) keycount FROM keywordcl GROUP BY keyword';
+        
+        IF(field IN('GENERAL_WORDCLOUD')) THEN
+        
+            OPEN cloud_csr FOR cols;
+                
+        ELSE
+            SELECT count(*) INTO cnt FROM keywordcl WHERE m_id=user_id AND kw_date >to_char(add_months(sysdate,-1),'yyyy-mm-dd');
+            
+            IF(cnt >0) THEN
+            
+                OPEN cloud_csr FOR
+                    SELECT m_id, keyword, kw_date, keycount FROM keywordcl WHERE m_id=user_id AND kw_date >to_char(add_months(sysdate,-1),'yyyy-mm-dd');
+                
+            ELSE
+                raise e_no_id_exist;
+            END IF;
+
+            
+            
+                
+        END IF;
+        
+    ELSE
+            raise e_field_not_found;
+        
+    END IF;
+    
+    
+    
+  EXCEPTION
+  
+    WHEN e_field_not_found THEN
+      dbms_output.put_line('검색할 항목이 올바르지 않습니다');
+      ROLLBACK;
+      
+    WHEN e_no_id_exist THEN
+      OPEN cloud_csr FOR 
+        SELECT '아이디가 존재하지 않습니다' msg FROM dual;
+      ROLLBACK;
+END;
+/

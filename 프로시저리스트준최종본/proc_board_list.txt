@@ -1,0 +1,142 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_list
+(
+   FIELD IN VARCHAR2,
+   BOARD_NO IN number, 
+   CSR_BOARD_LIST OUT SYS_REFCURSOR -- 커서로 반환
+)
+IS
+    cnt number;
+    e_field_not_found EXCEPTION;
+BEGIN       
+
+        IF(FIELD IN('BOARD_LIST')) THEN
+            SELECT count(*) into cnt FROM menu;
+            IF(cnt >0) THEN
+                OPEN  csr_board_list FOR
+                   SELECT a.menucd, a.foodname, a.m_id,a.m_nick,a.likecount,a.main_img FROM(
+                        SELECT m.menucd,mc.category, fc.foodgroup,m.foodname, new_r.recipe_info, mem.m_nick,new_r.creation_date, new_r.likecount,mem.m_id,m.main_img
+                        FROM (SELECT r.menucd as menucd, likecount.likecount_count as likecount, r.m_id as m_id, r.creation_date as creation_date ,r.recipe_info
+                        FROM recipe r
+                        INNER JOIN (
+                        select i_r.menucd as likecount_id, count(likes.menucd) as likecount_count
+                        from recipe i_r
+                        INNER JOIN likes
+                        ON i_r.menucd = likes.menucd(+)
+                        GROUP BY i_r.menucd
+                        ) likecount
+                        ON r.menucd = likecount.likecount_id
+                        ) new_r INNER JOIN menu m 
+                        ON m.menucd = new_r.menucd
+                        INNER JOIN member mem
+                        ON new_r.m_id = mem.m_id
+                        INNER JOIN food_category fc
+                        ON fc.foodcategorycd = m.foodcategorycd
+                        INNER JOIN menu_category mc
+                        ON mc.categorycd=m.categorycd
+                    ) a ORDER BY menucd desc;
+            ELSE
+                OPEN  csr_board_list FOR
+                    SELECT '등록된 게시글이 없습니다' msg FROM dual;
+            END IF;
+          
+            
+        ELSIF(field IN('POP_BOARD_LIST')) THEN
+        
+            SELECT count(*) into cnt FROM popular_recipe;
+            IF(cnt>0) THEN
+                OPEN csr_board_list FOR
+                     SELECT pr.likeno, a.foodname, a.m_id,a.m_nick, a.menucd,a.likecount,a.main_img FROM(
+                        SELECT m.menucd,mc.category, fc.foodgroup,m.foodname, new_r.recipe_info, mem.m_nick,new_r.creation_date, new_r.likecount,mem.m_id,m.main_img
+                        FROM (SELECT r.menucd as menucd, likecount.likecount_count as likecount, r.m_id as m_id, r.creation_date as creation_date ,r.recipe_info
+                        FROM recipe r
+                        INNER JOIN (
+                        select i_r.menucd as likecount_id, count(likes.menucd) as likecount_count
+                        from recipe i_r
+                        INNER JOIN likes
+                        ON i_r.menucd = likes.menucd
+                        GROUP BY i_r.menucd
+                        ) likecount
+                        ON r.menucd = likecount.likecount_id
+                        ) new_r INNER JOIN menu m 
+                        ON m.menucd = new_r.menucd
+                        INNER JOIN member mem
+                        ON new_r.m_id = mem.m_id
+                        INNER JOIN food_category fc
+                        ON fc.foodcategorycd = m.foodcategorycd
+                        INNER JOIN menu_category mc
+                        ON mc.categorycd=m.categorycd
+                    ) a INNER JOIN popular_recipe pr
+                    ON PR.MENUCD=a.menucd
+                    WHERE a.likecount>9;
+            ELSE
+                OPEN csr_board_list FOR
+                    SELECT '등록된 인기 게시글이 없습니다' msg FROM dual;
+            END IF;
+        
+        ELSIF(FIELD IN('BOARD_CONTENT')) THEN
+        
+            SELECT count(*) INTO cnt FROM menu WHERE menucd=board_no;
+            
+            IF(cnt>0) THEN
+                UPDATE RECIPE
+                 SET hit = hit + 1
+                 WHERE menucd = board_no;
+                 
+                 commit;
+                 
+                 OPEN csr_board_list FOR
+                    SELECT t_menu.menucd, t_menu.category, t_menu.foodgroup,t_menu.foodname, t_menu.main_img,memContent.recipe_info, t_ingred.jaelyo, t_ingred.weight, t_ingred.unit
+                           , t_hash.hashtag, memContent.m_id, memContent.m_nick, memContent.creation_date, memContent.hit,t_like.cnt,memContent.sub_img
+                    FROM (SELECT r.menucd, mem.m_id, mem.m_nick, r.recipe_info, r.creation_date, r.hit,r.sub_img FROM member mem INNER JOIN recipe r ON mem.m_id = r.m_id) memContent
+                    INNER JOIN (SELECT r.menucd, count(*) cnt FROM likes lk INNER JOIN recipe r ON r.menucd = lk.menucd GROUP BY r.menucd) t_like
+                    ON memContent.menucd = t_like.menucd(+)
+                    INNER JOIN (select m.menucd, mc.category,fc.foodgroup, m.foodname, m.main_img
+                    FROM menu m INNER JOIN food_category fc ON m.foodcategorycd = fc.foodcategorycd
+                    INNER JOIN menu_category mc ON MC.CATEGORYCD = m.categorycd) t_menu
+                    ON memContent.menucd = t_menu.menucd
+                    INNER JOIN (SELECT menucd
+                         , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', jaelyo) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) jaelyo
+                           , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', weight) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) weight
+                           , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', unit) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) unit
+                      FROM  (SELECT r.menucd, J.JAELYO,rw.weight,j.unit FROM RECIPE_WEIGH rw INNER JOIN RECIPE r ON RW.MENUCD = r.menucd
+                     INNER JOIN JAELYO j ON J.JAELYOCD = RW.JAELYOCD order by menucd desc) a
+                     GROUP BY menucd) t_ingred
+                     ON memContent.menucd = t_ingred.menucd
+                     INNER JOIN (SELECT menucd
+                         , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', hashtag) ORDER BY hashtagcd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) hashtag
+                      FROM hashtag
+                     GROUP BY menucd) t_hash
+                     ON memContent.menucd=t_hash.menucd
+                     WHERE t_menu.menucd = board_no;
+                    
+            ELSE
+                OPEN csr_board_list FOR
+                    SELECT '해당 게시글이 존재하지 않습니다' msg FROM dual;
+            END IF;
+        
+         ELSE
+            raise e_field_not_found;
+         END IF;
+
+    
+    EXCEPTION
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다'); --SQL문 확인 출력.
+END;
+/

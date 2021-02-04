@@ -1,0 +1,70 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_chef_list
+(
+   field IN varchar2,
+   user_id IN varchar2,
+   csr_chef_list OUT sys_refcursor -- 커서로 반환
+)
+IS
+    cnt number;
+    e_field_not_found EXCEPTION;
+BEGIN       
+
+    IF(field IN('CHEF_RANKING')) THEN
+    
+        OPEN csr_chef_list FOR
+                    SELECT RANK() OVER (ORDER BY m.m_like desc) AS ranking,m.m_id, m.m_name m_name, decode(m.m_gender,0,'남자',1,'여자') m_gender, m.m_mail m_mail, m.m_like m_like,cr.main_food main_food
+                    FROM member m
+                    INNER JOIN CHEF_REGISTER cr
+                    ON m.m_id = cr.m_id
+                    WHERE m.chef_apply = 2;
+            
+        
+    ELSIF(field IN('CHECK_CHEF')) THEN
+    
+        SELECT count(*) INTO cnt FROM recipe WHERE m_id = user_id;
+    
+        IF(cnt>0) THEN
+        
+            --글번호, 대분류, 소분류, 글제목, 글쓴이(닉네임), 글게시일, 좋아요개수
+            --MENUCD, CATEGORY, FOODGROUP, FOODNAME, M_NICK, CREATION_DATE, LIKECOUNT
+            OPEN csr_chef_list FOR
+                 SELECT * 
+                 FROM(
+                    SELECT m.menucd,mc.category, fc.foodgroup,m.main_img,m.foodname, mem.m_nick,new_r.creation_date, new_r.likecount,cr.writting
+                    FROM (SELECT r.menucd as menucd, likecount.likecount_count as likecount, r.m_id as m_id, r.creation_date as creation_date
+                          FROM recipe r
+                          INNER JOIN (
+                                SELECT i_r.menucd as likecount_id, count(likes.menucd) as likecount_count
+                                FROM recipe i_r
+                                INNER JOIN likes
+                                ON i_r.menucd = likes.menucd
+                                GROUP BY i_r.menucd
+                                ) likecount
+                          ON r.menucd = likecount.likecount_id
+                          ) new_r
+                          INNER JOIN menu m 
+                          ON m.menucd = new_r.menucd
+                          INNER JOIN member mem
+                          ON new_r.m_id = mem.m_id
+                          INNER JOIN food_category fc
+                          ON fc.foodcategorycd = m.foodcategorycd
+                          INNER JOIN menu_category mc
+                          ON mc.categorycd=m.categorycd
+                          INNER JOIN chef_register cr
+                          ON cr.m_id = mem.m_id
+                          WHERE mem.m_id=user_id);
+        ELSE
+            OPEN csr_chef_list FOR
+                SELECT '등록된 게시물이 존재하지 않습니다' msg
+                    FROM dual;
+        END IF;
+        
+    ELSE
+        raise e_field_not_found;
+    END IF;
+
+    EXCEPTION
+    WHEN e_field_not_found THEN
+        dbms_output.put_line('필드명을 제대로 입력해라잉');
+END;
+/

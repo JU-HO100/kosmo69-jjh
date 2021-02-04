@@ -1,0 +1,202 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_update
+(
+   p_board_no IN number,                    --게시판 번호
+   p_board_cate IN varchar2,                -- 대분류(양식, 중식, 한식, 일식)
+   p_board_menu IN varchar2,                -- 소분류(찜, 구이, 튀김, 디저트..)
+   p_user_id IN varchar2,                   -- 회원 아이디
+   p_board_subject IN varchar2,             -- 게시판제목
+   p_board_mainIMG IN varchar2,             -- 게시판 목록에 보여줄 이미지
+   p_board_content IN varchar2,             -- 게시판 내용
+   p_board_contentIMG IN varchar2,          -- 게시판 본문에 사용할 이미지들
+   p_board_ingredient IN varchar2,          -- 문자열[ 재료('고추장, 된장, 양파, 대파')]
+   p_mensuration IN varchar2,               -- 문자열[ 계량('4,2,반,반')]
+   p_recipe_unit IN varchar2,               -- 문자열[ 단위('Tbs, Tbs, 개, 쪽')]
+   p_hashtag IN varchar2,                    -- 문자열[ 해시태그('사랑하는, 어머님께, 드리는, 선물')]
+   msg OUT varchar2
+)
+IS  
+    checker number;                            -- 그냥 어디서든 기타 체크가 필요할때 사용할 변수
+    ingred_checker number;                  -- 검색할 재료가 테이블에 있는지 확인할 변수  (0, 1)
+    ingred_num number;                      -- 재료 반복문 카운트
+    ingred_maxnum number;                   -- 파라미터로 들어온 재료 데이터 총 개수
+    hasht_num number;                       -- 해시태그 반복문 카운트
+    hasht_maxnum number;                    -- 파라미터로 들어온 파라미터 데이터 총 개수
+    v_cate_cd varchar2(10);                -- 카테고리CD
+    v_foodcate_cd varchar2(10);            -- 음식분류CD
+    v_ingredient_cd number;                 -- 재료CD
+    v_ingredient varchar2(50);              -- 재료
+    v_recipe_unit varchar2(50);             -- 재료단위
+    v_mensuration varchar2(50);             -- 레시피에 필요한 재료의 계량 || 개수
+    v_hashtag varchar2(50);                 -- 해시태그
+    
+    subjectByte number;
+    contentByte number;
+    ingredByte number;
+    hashtagByte number;
+    
+    e_hasht_no_exist  EXCEPTION;
+    e_ingred_no_exist EXCEPTION;
+    e_field_not_found EXCEPTION;
+BEGIN       
+
+    
+    SELECT categorycd INTO v_cate_cd FROM menu_category WHERE category = p_board_cate;
+    
+    SELECT foodcategorycd INTO v_foodcate_cd FROM food_category WHERE foodgroup = p_board_menu;
+    
+    --유효성 검사 제목과 본문의 바이트량 담기
+    SELECT LENGTHB(p_board_subject) INTO subjectByte FROM dual;
+    SELECT LENGTHB(p_board_content) INTO contentByte FROM dual;
+    
+    IF(subjectByte>3) THEN
+        UPDATE menu
+        SET foodname = p_board_subject,
+        categorycd = v_cate_cd,
+        foodcategorycd = v_foodcate_cd,
+        main_img = p_board_mainIMG
+        WHERE menucd = p_board_no;
+    ELSE
+        msg:='게시글 제목의 길이는 4 Byte 이상입니다';
+        return;
+    END IF;
+    
+    
+    IF(contentByte>19) THEN
+        UPDATE recipe
+        SET recipe_info = p_board_content,
+        sub_img = p_board_contentIMG
+        WHERE menucd = p_board_no;
+    ELSE
+        msg:='게시글 제목의 길이는 20 Byte 이상입니다';
+        return;
+    END IF;
+    
+    --============================= 재료 다중 인서트 시작======================================
+    --  function의 기능을 사용한다  
+    --  function과 프로시저의 차이점 : 1. function 은 리턴값이존재, 프로시저는 존재하지 않음
+    --                         2. function 에서는 다수의 DML 을 사용하지 못함..! 프로시저는 가능 !
+    --
+    --  func_split 의 기능 = 파라미터(1,2,3)
+    --                    1 = 어떤 문자열을 처리할 것인지? ex) '제육볶음,김밥,무말랭이'  -VARCHAR2
+    --                    2 = 어떤 구분자로 사용할 것인지? ex) ',', '>', '&'    -VARCHAR2
+    --                    3 = 몇번째 데이터를 뽑을것인지? ex) 1, 2, 3           -NUMBER
+    --==================================================================================
+    
+    -- 구분점(,)의 개수 파악
+    SELECT (length(p_board_ingredient)-length(replace(p_board_ingredient,',',''))) INTO ingred_maxnum FROM dual;
+    
+    --파라미터로 들어온 재료가 존재하는지 유효성 검사
+    IF(ingred_maxnum>=0) THEN
+    
+        --업데이트문으로는 처리할수 없기에 게시글번호에 해당하는 데이터를 다 지우고 새로운것으로 다시 집어넣음
+        DELETE FROM recipe_weigh WHERE menucd = p_board_no;
+        -- 데이터의 총 개수 = 콤마(,) + 1
+        ingred_maxnum:=ingred_maxnum+1;
+        -- 만들어 놓은 function 에서  데이터의 시작은 1부터이다 (0이 아니다)
+        -- 예제 테스트 해보기 : SELECT func_split('짬뽕,제육볶음,스시',',', 2)  from dual;    <- ctrl+c 한다음 다른곳에서 테스트
+        ingred_num:=1;
+        
+        LOOP
+            SELECT func_split(p_board_ingredient,',', ingred_num) INTO v_ingredient FROM dual;       --재료명(고추장,된장,양파,대파)
+            
+            SELECT func_split(p_recipe_unit,',', ingred_num) INTO v_recipe_unit FROM dual;           --단위(Tbs, Tbs, 개, 쪽)
+            
+            SELECT func_split(p_mensuration,',', ingred_num) INTO v_mensuration FROM dual;           --계량 개수(4,2,반,반)
+            
+            
+            --재료 테이블에서 해당된 재료와 단위가 있는지 카운트
+            --있다면 1 없다면 0
+            SELECT count(*) INTO ingred_checker  FROM jaelyo WHERE jaelyo = v_ingredient AND unit= v_recipe_unit;
+            
+             --유효성 검사 재료 개수나 무게의 바이트량 담기
+            SELECT lengthb(v_recipe_unit) INTO ingredByte FROM dual;
+            
+            IF(ingredByte>0) THEN
+                --재료가 있으면 재료CD 따서 인서트 해주기 
+                IF(ingred_checker>0) THEN
+                
+                    --recipe_weight 테이블에 담을 재료, 단위에 해당하는 CD 찾기
+                    SELECT jaelyocd INTO v_ingredient_cd  FROM jaelyo WHERE jaelyo = v_ingredient AND unit= v_recipe_unit;
+                    
+                    --글 안에 일치하는 재료, 재료량이 있는지 확인할 변수담기
+                    SELECT count(*) INTO checker FROM recipe_weigh WHERE menucd = p_board_no and weight = v_mensuration and jaelyocd = v_ingredient_cd;
+                    
+                    IF(checker>0) THEN
+                        msg:='정확히 일치하는 재료, 재료량이 존재합니다';
+                        return;
+                    ELSE
+                        INSERT INTO recipe_weigh VALUES(v_ingredient_cd, v_mensuration, p_board_no);
+                    END IF;
+
+                ELSE
+                    raise e_ingred_no_exist;
+                END IF;
+                
+            ELSE
+                msg:='재료량을 입력하셔야 합니다';
+                return;
+            END IF;
+            
+
+            ingred_num := ingred_num+1;
+            EXIT WHEN ingred_num >ingred_maxnum;
+        END LOOP;
+        
+    ELSE
+        raise e_ingred_no_exist;
+    END IF;
+    
+    
+    --============================= 해시태그 다중 인서트 시작================================
+    -- 구분점( )의 개수 파악
+    SELECT (length(p_hashtag)-length(replace(p_hashtag,' ',''))) INTO hasht_maxnum FROM dual; -- 공백을 기준으로 단어 나누기
+    
+    -- 파라미터로 들어온 해시태그가 존재하는지 유효성 검사
+    IF(hasht_maxnum>=0) THEN
+    
+        --업데이트문으로는 처리할수 없기에 게시글번호에 해당하는 데이터를 다 지우고 새로운것으로 다시 집어넣음
+        DELETE FROM hashtag WHERE menucd = p_board_no;
+        
+        hasht_maxnum:=hasht_maxnum+1;
+        
+        hasht_num:=1;
+        
+        LOOP
+            SELECT func_split(p_hashtag,' ', hasht_num) INTO v_hashtag FROM dual;       --해시태그(사랑하는 어머님께 드리는 선물)
+            
+            --유효성검사 해시태그의 바이트 량 담기
+            SELECT lengthb(v_hashtag) INTO hashtagByte FROM dual;
+            
+            IF(hashtagByte>1) THEN
+                INSERT INTO hashtag VALUES(hashtagcd_seq.nextval, v_hashtag, p_board_no);
+            ELSE
+                msg:='해시태그 입력시 2 Byte 이상 입력하셔야 합니다';
+                return;
+            END IF;
+            
+            hasht_num := hasht_num+1;
+            EXIT WHEN hasht_num >hasht_maxnum;
+        END LOOP;
+        
+    ELSE
+        raise e_hasht_no_exist;
+    END IF;
+    
+    commit;
+    
+    msg:='게시물 수정이 완료되었습니다';
+    
+    EXCEPTION
+        WHEN e_ingred_no_exist THEN
+            SYS.dbms_output.put_line('재료나 단위가 존재하지 않습니다');
+            rollback;
+            return;                                                 -- return : 프로시저 강제 탈출
+        WHEN e_hasht_no_exist  THEN
+            SYS.dbms_output.put_line('해시태그가 존재하지 않습니다');
+        WHEN others THEN                                            --  others : 나머지들. 항상 exception 구문에 가장 뒤에 와야 한다.
+            dbms_output.put_line('에러코드: '||sqlcode);            -- sqlcode : 에러 코드
+            dbms_output.put_line('에러 메세지: '||sqlerrm);          -- sqlerrm : 에러 메세지
+            rollback;
+            return;
+END;
+/

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<!-- ifRoom:앱바에 공간이 있으면 공유액션 프로바이더를 표시함.
+     withText:항목의 제목 텍스트를 포함함.
+     never:항목을 오버플로 영역에 추가하며 앱바 메인영역에는 절대 표시하지 않습니다.
+     orderInCategory 앱바에 순서
+ -->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/login"
+        android:orderInCategory="1"
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
+<!-- 공유 액션 프로바이더는 이미 아이콘을 정의하고 있기때문 아이콘을 추가할 필요 없다.
+     공유 액션 프로바이더는 AppCompat지원 라이브러리에서 제공함.
+-->
+</menu>

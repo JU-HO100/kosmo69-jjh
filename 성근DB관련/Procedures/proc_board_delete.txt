@@ -1,0 +1,99 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_delete
+(
+   p_board_no IN menu.menucd%TYPE,
+   p_user_id  IN member.m_id%TYPE,
+   msg OUT varchar2
+)
+IS
+    cnt number;
+    DeleteChecker number;           -- 여러가지 트랜잭션에 필요한 데이터들이 존재하는지 체크
+    lastChecker number;
+    e_no_right  EXCEPTION;
+    
+BEGIN       
+    
+    SELECT count(*) INTO cnt FROM recipe WHERE m_id = p_user_id AND menucd=p_board_no;
+    
+    IF(cnt>0) THEN
+    
+        SELECT count(*) into DeleteChecker FROM popular_recipe WHERE menucd = p_board_no; -- 인기레시피에 등록되어있는지 체크
+    
+        IF (DeleteChecker>0) THEN
+        
+            DELETE FROM popular_recipe WHERE menucd = p_board_no;                      --인기레시피에 등록되어있는 것부터 삭제
+            SYS.dbms_output.put_line('인기레시피삭제');
+        END IF;
+        
+        
+        DeleteChecker:=0;   -- 체커 초기화
+        
+        SELECT count(*) into DeleteChecker FROM likes WHERE menucd=p_board_no; --글에 등록되어있는 좋아요가 있나 체크
+        
+        IF(DeleteChecker>0) THEN
+        
+            DELETE FROM LIKES  WHERE menucd = p_board_no;   -- 해당 게시물의 모든 좋아요 삭제
+            SYS.dbms_output.put_line('좋아요 삭제');
+        END IF;
+        
+        
+        DeleteChecker:=0;   -- 체커 초기화
+        SELECT count(*) into DeleteChecker FROM recipe_weigh WHERE menucd=p_board_no;
+        
+        IF(DeleteChecker>0) THEN
+            
+            DELETE FROM RECIPE_WEIGH WHERE menucd = p_board_no; --해당 게시물의 모든 재료,  계량 삭제
+            SYS.dbms_output.put_line('재료삭제');
+        END IF;
+        
+        
+        DeleteChecker:=0;   -- 체커 초기화
+        SELECT count(*) into DeleteChecker FROM HASHTAG WHERE menucd=p_board_no;
+        
+        IF(DeleteChecker>0) THEN
+        
+            DELETE FROM HASHTAG  WHERE menucd = p_board_no;     --해당 게시물의 모든 해시태그 삭제
+            SYS.dbms_output.put_line('해시태그삭제');
+        END IF;
+        
+        DeleteChecker:=0;   -- 체커 초기화
+        SELECT count(*) into DeleteChecker FROM RECIPE WHERE menucd=p_board_no;
+        
+        IF(DeleteChecker>0) THEN
+        
+            DELETE FROM RECIPE   WHERE menucd = p_board_no AND m_id = p_user_id;        --해당 게시물 본문 삭제(레시피)
+            SYS.dbms_output.put_line('본문 삭제');
+            
+        END IF;
+        
+        DeleteChecker:=0;   -- 체커 초기화
+        SELECT count(*) into DeleteChecker FROM MENU  WHERE menucd=p_board_no;
+        
+        SELECT count(*) into lastChecker FROM RECIPE WHERE menucd=p_board_no;
+        
+        IF(DeleteChecker>0 AND lastChecker =0) THEN
+        
+            DELETE FROM MENU  WHERE menucd = p_board_no;                    --마지막으로 제목 삭제(menu테이블)
+            SYS.dbms_output.put_line('제목삭제');
+        ELSIF(lastChecker >0) THEN
+            rollback;
+            msg:='삭제가 정상참작이 되지 않았습니다';
+        
+        END IF;
+        
+        commit;
+        msg:='정상적으로 삭제처리 되었습니다';
+        
+        
+    ELSE
+        raise e_no_right;
+    
+    END IF;
+    
+    
+    EXCEPTION
+        WHEN e_no_right THEN
+            msg:='권한이 없습니다';
+            rollback;
+            return; 
+END;
+/

@@ -1,0 +1,380 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_admin_mem_controller(     
+   field IN varchar2,
+   master_id IN varchar2, 
+   user_id IN varchar2,
+   right_ IN varchar2,
+   masterCsr OUT sys_refcursor
+)
+IS
+    cnt number;                         --cnt 하나로 돌려서 해도 되지만 구분해주기 위해서 여러개 사용함
+    memCnt number;
+    memCheck number;
+    chefCheck number;
+    cookClassCheck number;
+    masterid varchar2(50);
+    masterRight number;
+    rightName varchar2(20);
+    masterChecker varchar2(100);
+    cols varchar2(500);
+    
+    e_not_found_field EXCEPTION;
+    e_aldy_has_right EXCEPTION;
+    e_no_master_right EXCEPTION;
+BEGIN  
+    
+    SELECT count(*) INTO cnt FROM master_user WHERE m_id = master_id;   --관리자인지 체크
+    
+    IF(cnt>0) THEN
+        SELECT master_groupid INTO masterChecker FROM master_user WHERE m_id = master_id; --무슨 관리자인지 체크
+        sys.dbms_output.put_line('여기');
+        --============================총관리자 ONLY ======================================
+         IF(FIELD IN('GIVE_RIGHT','DELETE')) THEN
+         
+                 IF(masterChecker IN('MG1')) THEN                --총관리자만이 가지는 권한 시행 [ 권한 위임 ]
+                 
+                        IF(field IN('GIVE_RIGHT')) THEN                                     --권한 위임
+                                        
+                                             IF(right_ = 'MG1') THEN
+                                                OPEN masterCsr FOR
+                                                   SELECT '총 권한자 위임은 불가능합니다' msg FROM dual;
+                                            ELSE
+                                                SELECT count(*) INTO masterChecker FROM master_user
+                                                WHERE m_id = user_id AND master_groupid = right_;
+                                                
+                                                IF(masterChecker = 0) THEN
+                                                    INSERT INTO MASTER_USER VALUES(user_id, right_);
+                                                    commit;
+                                                    SELECT master_groupname INTO rightName FROM master_group WHERE master_groupid = right_;   -- 메시지 출력을 위한 권한명 변수담기
+                                                    OPEN masterCsr FOR
+                                                       SELECT '권한을 위임하였습니다' msg FROM dual;
+                                                ELSE
+                                                    raise e_aldy_has_right;         --권한이 이미 존재할 때
+                                                END IF;
+                                                
+                                            END IF;  
+                                            
+                                            return;          
+                                      
+                          ELSIF(field IN('DELETE')) THEN                                                 --권한 박탈
+                                        
+                                            SELECT count(*) INTO masterChecker FROM master_user                     -- 이미 갖고있던 권한까지 파라미터로 받음
+                                            WHERE m_id = user_id AND master_groupid = right_;
+                                            
+                                            IF(masterChecker=0) THEN
+                                                OPEN masterCsr FOR
+                                                   SELECT '해당 권한자가 아닙니다' msg FROM dual;
+                                            ELSE
+                                                DELETE FROM master_user WHERE m_id = user_id AND master_groupid= right_;
+                                                commit;
+                                                SELECT master_groupname INTO rightName FROM master_group WHERE master_groupid = right_;   -- 메시지 출력을 위한 권한명 변수담기
+                                                
+                                                OPEN masterCsr FOR
+                                                   SELECT '해당관리자의 권한을 해지하였습니다'msg FROM dual;
+                                                
+                                            END IF;
+                                            
+                        return;
+                                        
+                        END IF;  
+                                        
+                    ELSE 
+                        raise e_no_master_right;
+               END IF; 
+
+            --============================총관리자 or 회원관리자======================================
+        ELSIF(FIELD IN('PUT_BLACK','PUT_PAUSE','RELEASE_PAUSE_MEM','READ_WRITTING','COMMIT_CHEF')) THEN
+        
+                IF(masterChecker IN('MG1','MG4')) THEN  
+                
+                     IF(field IN('PUT_BLACK')) THEN         --블랙리스트 추가하기
+                     
+                        SELECT count(*) INTO memCnt FROM member WHERE m_id=user_id;
+                        
+                        IF(memCnt>0) THEN
+                            SELECT count(*) INTO memCheck FROM blist WHERE m_id = user_id AND checkblist=2;
+                        
+                            IF(memCheck>0) THEN
+                            
+                                OPEN masterCsr FOR
+                                   SELECT '이미 블랙리스트인 회원입니다' msg FROM dual;
+                                
+                            ELSE
+                                SELECT count(*) INTO memCheck FROM blist WHERE m_id = user_id;  -- blist 테이블에 등록되어있는지 여부체크
+
+                                
+                                
+                                --===========================쿠킹클래스 관련================================
+                                SELECT count(*) INTO cookClassCheck FROM cooking_register WHERE m_id=user_id;
+                                
+                                --쿠킹클래스에 등록되어 있니?
+                                IF(cookClassCheck>0) THEN   -- yes
+                                
+                                    --일단 셰프든 회원이든 지우기
+                                    DELETE FROM cooking_register WHERE m_id=user_id;
+                                    
+                                    --delete 된것이 셰프면 1 출력될 것이고 셰프가 아니면 0이 출력될 것임
+                                    SELECT count(*) INTO chefCheck FROM(
+                                    SELECT c_classcd, max(rgreport) rgreport FROM cooking_register group by c_classcd) a WHERE a.rgreport !=3;
+                                    
+                                    if(chefCheck>0) THEN   -- 셰프였다면?
+                                    
+                                        --3(셰프)이 없는 register 테이블의 c_classcd(클래스 번호) 다 지우기
+                                        delete from cooking_register
+                                        where c_classcd not in (
+                                            select c_classcd
+                                            from cooking_register
+                                            group by c_classcd, rgreport
+                                            having rgreport = 3
+                                        );
+                                        
+                                        --register 에 없는 쿠킹클래스 지우기
+                                        DELETE FROM cooking_class 
+                                        WHERE c_classcd not in(
+                                            SELECT cc.c_classcd 
+                                            FROM cooking_class cc 
+                                            INNER JOIN cooking_register cr 
+                                            ON cr.c_classcd = cc.c_classcd 
+                                            GROUP BY cc.c_classcd
+                                        );
+                                        
+                                        
+                                    END IF;
+                                    
+                                    
+                                    
+                                END IF;
+                                --===========================쿠킹클래스 관련 끝================================
+                                
+                                
+                                
+                                IF(memCheck>0) THEN
+                                
+                                    UPDATE BLIST
+                                    SET checkblist = 2
+                                        ,report = 999
+                                    WHERE m_id=user_id;
+                                    
+                                    
+                                ELSE
+                                
+                                    INSERT INTO blist VALUES(user_id,2,999);
+                                
+                                END IF;
+                                
+                                UPDATE member
+                                SET m_gender = -3
+                                    ,chef_apply=-3
+                                WHERE m_id=user_id;
+                                
+                                commit;
+                                
+                                OPEN masterCsr FOR
+                                   SELECT '해당 회원을 블랙리스트 처리하였습니다' msg FROM dual;
+                                
+                            END IF;
+                            
+                        ELSE
+                                OPEN masterCsr FOR
+                                   SELECT '등록된 회원을 입력하여 주세요' msg FROM dual;
+                        END IF;
+                     
+                        return;
+                        
+                     ELSIF(field IN('PUT_PAUSE')) THEN --일시정지 등록하기
+                     
+                        SELECT count(*) INTO memCnt FROM member WHERE m_id=user_id;
+                        
+                        IF(memCnt>0) THEN
+                            SELECT count(*) INTO memCheck FROM blist WHERE m_id = user_id AND checkblist=1;
+                        
+                            IF(memCheck>0) THEN
+                            
+                                OPEN masterCsr FOR
+                                   SELECT '이미 일시정지된 회원입니다' msg FROM dual;
+                                
+                            ELSE
+                                SELECT count(*) INTO memCheck FROM blist WHERE m_id = user_id;  -- blist 테이블에 등록되어있는지 여부체크
+
+                                
+                                --===========================쿠킹클래스 관련================================
+                                SELECT count(*) INTO cookClassCheck FROM cooking_register WHERE m_id=user_id;
+                                
+                                --쿠킹클래스에 등록되어 있니?
+                                IF(cookClassCheck>0) THEN   -- yes
+                                
+                                    --일단 셰프든 회원이든 지우기
+                                    DELETE FROM cooking_register WHERE m_id=user_id;
+                                    
+                                    --delete 된것이 셰프면 1 출력될 것이고 셰프가 아니면 0이 출력될 것임
+                                    SELECT count(*) INTO chefCheck FROM(
+                                    SELECT c_classcd, max(rgreport) rgreport FROM cooking_register group by c_classcd) a WHERE a.rgreport !=3;
+                                    
+                                    if(chefCheck>0) THEN   -- 셰프였다면?
+                                    
+                                        --3(셰프)이 없는 register 테이블의 c_classcd(클래스 번호) 다 지우기
+                                        delete from cooking_register
+                                        where c_classcd not in (
+                                            select c_classcd
+                                            from cooking_register
+                                            group by c_classcd, rgreport
+                                            having rgreport = 3
+                                        );
+                                        
+                                        --register 에 없는 쿠킹클래스 지우기
+                                        DELETE FROM cooking_class 
+                                        WHERE c_classcd not in(
+                                            SELECT cc.c_classcd 
+                                            FROM cooking_class cc 
+                                            INNER JOIN cooking_register cr 
+                                            ON cr.c_classcd = cc.c_classcd 
+                                            GROUP BY cc.c_classcd
+                                        );
+                                        
+                                        
+                                    END IF;
+                                    
+                                    
+                                    
+                                END IF;
+                                --===========================쿠킹클래스 관련 끝================================
+                                
+                                IF(memCheck>0) THEN
+                                
+                                    UPDATE BLIST
+                                    SET checkblist = 1
+                                    WHERE m_id=user_id;
+                                    
+                                ELSE
+                                
+                                    INSERT INTO blist VALUES(user_id,1,99);
+                                
+                                END IF;
+                                
+                                UPDATE member
+                                SET m_gender = -2
+                                    ,chef_apply=-2
+                                WHERE m_id=user_id;
+                                
+                                commit;
+                                
+                                OPEN masterCsr FOR
+                                   SELECT '해당 회원을 일시정지 처리 하였습니다' msg FROM dual;
+                                
+                            END IF;
+                        ELSE
+                                OPEN masterCsr FOR
+                                   SELECT '등록된 회원을 입력하여 주세요' msg FROM dual;
+                            
+                        END IF;
+                     
+                        return;
+                        
+                     ELSIF(field IN('RELEASE_PAUSE_MEM')) THEN  --일시정지 풀어주기
+                     
+                     
+                        SELECT count(*) INTO memCnt FROM member WHERE m_id=user_id;
+
+                        IF(memCnt>0) THEN
+                        
+                            SELECT count(*) INTO memCheck FROM blist WHERE m_id = user_id AND checkblist=1;
+                            
+                            IF(memCheck>0) THEN
+                            
+                                UPDATE blist
+                                SET checkblist=0,
+                                    report=0
+                                WHERE m_id=user_id;
+                                
+                                commit;
+                                
+                                OPEN masterCsr FOR
+                                   SELECT '해당 회원의 일시정지 상태를 해제하였습니다' msg FROM dual;
+                                
+                            ELSE
+                            
+                                OPEN masterCsr FOR
+                                   SELECT '일시정지 상태인 회원만 수정가능합니다' msg FROM dual;
+                            
+                            END IF;
+                        
+                        ELSE
+                                OPEN masterCsr FOR
+                                   SELECT '등록된 회원을 입력하여 주세요' msg FROM dual;
+                        
+                        END IF;
+                     
+                        return;
+                     
+                     ELSIF(field IN('READ_WRITTING')) THEN
+                     
+                        SELECT count(*) INTO memCheck FROM chef_register WHERE m_id=user_id;
+                        
+                        IF(memCheck >0) THEN
+                           
+                           OPEN masterCsr FOR
+                                SELECT m_id, main_food, writting FROM chef_register WHERE m_id = user_id;   --셰프 양식서 보기
+                        
+                        ELSE
+                        
+                                OPEN masterCsr FOR
+                                   SELECT '등록된 양식서가 없습니다' msg FROM dual;
+                            
+                        END IF;
+                        
+                        return;
+                     
+                     ELSIF(field IN('COMMIT_CHEF')) THEN
+                     
+                        SELECT chef_apply INTO chefCheck FROM member WHERE m_id=user_id;
+                        
+                        IF(chefCheck=1) THEN
+                        
+                            UPDATE member
+                            SET chef_apply = 2
+                            WHERE m_id=user_id;
+                            
+                            commit;
+                            
+                                OPEN masterCsr FOR
+                                   SELECT '셰프로 등록 시켰습니다' msg FROM dual;
+                            
+                        ELSE
+                                OPEN masterCsr FOR
+                                   SELECT '양식서를 제출한 회원이 아니거나 이미 셰프로 등록된 회원입니다' msg FROM dual;
+                        
+                        END IF;
+                     
+                     
+                     END IF;
+                     
+                     return;
+
+                END IF;
+            
+            ELSE 
+                raise e_not_found_field;
+            END IF;
+    ELSE
+        raise e_not_found_field;
+    END IF;
+    
+      
+
+EXCEPTION
+    WHEN e_no_master_right THEN
+        OPEN masterCsr FOR
+            SELECT '접근권한이 없습니다' msg FROM dual;
+        return;
+        
+    WHEN e_aldy_has_right THEN
+        OPEN masterCsr FOR
+            SELECT '해당 권한이 이미 존재합니다' msg FROM dual;
+       return;
+       
+    WHEN e_not_found_field THEN
+        OPEN masterCsr FOR
+            SELECT '기타 권한이 존재하지 않습니다' msg FROM dual;
+       return;
+       
+END;
+/

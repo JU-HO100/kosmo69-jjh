@@ -1,0 +1,82 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_show_cookclass
+(
+csr OUT sys_refcursor
+)
+IS
+    i number;
+    v_classcd varchar2(50);
+    secCnt number;
+--    cnt number;
+    v_delCd varchar2(50);
+    
+    --e_need_login EXCEPTION;
+BEGIN
+   /*
+  SELECT count(*) INTO cnt FROM member WHERE m_id=user_id;
+    
+
+  IF(cnt>0) THEN  
+    */
+        
+        
+        --쿠킹클래스 리스트가 열렸을때 현재시간보다 지난것이 있다면 쿠킹클래스 자동으로 삭제처리해주기
+        SELECT count(*) INTO secCnt FROM cooking_class WHERE c_date<to_char(sysdate,'YYYY-MM-DD HH24:MI');
+        
+        IF(secCnt>0) THEN
+        
+        -- 현재 시간보다 낮은 시간들(지난 시간) 지워버릴 변수 담기
+            SELECT WM_CONCAT(c_classcd) c_classcd INTO v_classcd  --여러개의 로우를 구분점 콤마(WM_CONCAT 은 구분점 무조건 콤마) 포함 한개의 로우로 담을 DML (ex. 27,46,35)      
+            FROM COOKING_CLASS
+            WHERE c_date<to_char(sysdate,'YYYY-MM-DD HH24:MI');
+            
+            i:=1;
+            LOOP
+                SELECT func_split(v_classcd,',', i) INTO v_delCd FROM dual; 
+                DELETE FROM cooking_register WHERE c_classcd = v_delCd;
+                DELETE FROM cooking_class WHERE c_classcd = v_delCd;
+                commit;
+                i:=i+1;
+                EXIT WHEN i>secCnt;
+            END LOOP;
+        
+            
+        END IF;
+        
+        OPEN csr FOR
+            SELECT  chef_class.c_classcd, chef_class.c_cook, chef_class.c_ingredients, chef_class.c_zip
+                    , chef_class.c_zipdetail, nvl(nowPersons,0) nowPersons, maxpersons, c_date, m_id, rgreport
+            FROM
+                (SELECT cc.c_classcd, cc.c_cook, cc.c_ingredients, cc.c_zip,nvl(cc.c_zipdetail,'-') c_zipdetail,cc.c_member maxpersons, cc.c_date
+                        , i_chef_class.m_id, decode(i_chef_class.rgreport,3,'셰프') rgreport
+                FROM cooking_class cc
+                INNER JOIN
+                    (SELECT m_id, c_classcd, rgreport
+                     FROM cooking_register 
+                     WHERE rgreport=3) i_chef_class
+                ON CC.C_CLASSCD = i_chef_class.c_classcd) chef_class
+                INNER JOIN
+                    (SELECT c_classcd, count(*) nowPersons
+                     FROM cooking_register
+                     WHERE rgreport=1
+                     GROUP BY c_classcd) Persons
+                ON chef_class.c_classcd = Persons.c_classcd(+)
+                ORDER BY chef_class.c_classcd;
+
+/*
+    ELSE
+        raise e_need_login;
+    END IF;
+*/
+
+/*
+    EXCEPTION
+   
+       WHEN e_need_login THEN
+            OPEN csr FOR
+            SELECT '로그인 전용 페이지 입니다' msg FROM dual;
+            
+            return;
+*/
+            
+END;
+/

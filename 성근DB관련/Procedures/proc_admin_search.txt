@@ -1,0 +1,237 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_admin_search
+(
+    FIELD IN varchar2,                      -- 쿠킹클래스, 회원, 게시판 : 'ADMIN_BOARD','ADMIN_MEMBER','ADMIN_CLASS'
+    CATEGORY IN varchar2,                   -- 어떤 분류로 검색할건지? 
+    KEYWORD IN varchar2,                 -- 입력값
+    OPTION_KEYWORD1 IN varchar2,       
+    OPTION_KEYWORD2 IN varchar2,
+    SEARCH OUT SYS_REFCURSOR -- 커서로 반환
+)
+IS
+    cols VARCHAR2(4000);   
+    e_category_not_found EXCEPTION;
+    e_field_not_found EXCEPTION;
+BEGIN       
+        IF (field IN('ADMIN_RIGHT','ADMIN_BOARD','ADMIN_MEMBER','ADMIN_CLASS')) THEN 
+        
+            IF(field IN('ADMIN_RIGHT')) THEN                                -- 관리자 권한리스트
+                OPEN SEARCH FOR
+                    SELECT * FROM MASTER_GROUP;
+                    
+            ELSIF(field IN('ADMIN_BOARD')) THEN                            -- (레시피)게시판 관련 검색
+                cols:=q'[
+                        SELECT menucd "게시번호", category "대분류", foodgroup "소분류", foodname "글제목", hashtag "해시태그", creation_date "게시일", hit "조회수", like_cnt "좋아요수",b_status "게시물상태", m_id "아이디", m_nick "닉네임", m_status "회원상태"
+                        FROM
+                            (SELECT b_t.menucd menucd, b_t.category category, b_t.foodgroup foodgroup, b_t.foodname foodname,b_t.hashtag hashtag
+                                    , b_t.creation_date creation_date,b_t.hit hit,(DECODE(nvl(p_b."게시글상태",0),0,'일반게시글','인기게시글')) b_status, b_t.cnt like_cnt
+                                    , b_t.m_id m_id, b_t.m_nick m_nick, b_t."회원상태" m_status
+                             FROM
+                                (SELECT t_menu.menucd, t_menu. category, t_menu.foodgroup,t_menu.foodname, memContent.recipe_info,nvl(t_like.cnt,0) cnt
+                               , t_hash.hashtag, memContent.m_id, memContent.m_nick, memContent.creation_date, memContent.hit
+                               , CASE WHEN memContent.chef_apply>=0 AND memContent.chef_apply<3 THEN '일반회원' when memContent.chef_apply=3
+                                      THEN '셰프'
+                                      WHEN memContent.chef_apply=-1
+                                      THEN '탈퇴회원' ELSE '관리자' END AS "회원상태"
+                                 FROM
+                                    (SELECT r.menucd, mem.m_id, mem.m_nick, r.recipe_info, r.creation_date, r.hit,mem.chef_apply
+                                    FROM member mem
+                                    INNER JOIN recipe r
+                                    ON mem.m_id = r.m_id) memContent
+                                 INNER JOIN
+                                    (SELECT r.menucd, count(*) cnt
+                                    FROM likes lk
+                                    INNER JOIN recipe r
+                                    ON r.menucd = lk.menucd
+                                    GROUP BY r.menucd) t_like
+                                ON memContent.menucd = t_like.menucd(+)
+                                INNER JOIN
+                                    (SELECT m.menucd, mc.category,fc.foodgroup, m.foodname 
+                                     FROM menu m
+                                     INNER JOIN food_category fc ON m.foodcategorycd = fc.foodcategorycd
+                                     INNER JOIN menu_category mc ON MC.CATEGORYCD = m.categorycd) t_menu
+                                ON memContent.menucd = t_menu.menucd
+                                INNER JOIN
+                                    (SELECT menucd
+                                            , SUBSTR(
+                                                XMLAGG(
+                                                    XMLELEMENT(COL ,',', hashtag)
+                                                    ORDER BY hashtagcd).EXTRACT('//text()').GETSTRINGVAL(), 2) hashtag
+                                     FROM hashtag
+                                     GROUP BY menucd) t_hash
+                                ON memContent.menucd=t_hash.menucd) b_t
+                            INNER JOIN
+                                (SELECT menucd, count(*) "게시글상태"
+                                FROM popular_recipe
+                                GROUP BY menucd) p_b
+                            ON b_t.menucd = p_b.menucd(+))
+                         ]';
+                 
+                    --위에 해당하는 11개 칼럼
+                    IF(CATEGORY IN('MENUCD','CATEGORY','FOODGROUP','FOODNAME','HASHTAG','M_ID','M_NICK','CREATION_DATE','HIT','M_STATUS','B_STATUS','LIKE_CNT')) THEN  
+                        cols:=cols||q'[ WHERE ]'||CATEGORY;
+                        --화면 단에서 버튼처리할 칼럼
+                        IF(CATEGORY IN('MENUCD','CATEGORY','FOODGROUP','B_STATUS', 'M_STATUS','M_ID')) THEN  --버튼처리(상수값처리) : CATEGORY, FOODGROUP, B_STATUS, M_STATUS  -  그 외 정확한 검색어 : MENUCD, M_ID
+                            cols:=cols||q'[ =']'||keyword||q'[']';
+                        ELSIF(CATEGORY IN('LIKE_CNT','HIT')) THEN
+                             IF(option_keyword1<= option_keyword2) THEN
+                                cols:=cols||q'[ >=']'||option_keyword1||q'[' AND ]'||CATEGORY||q'[ <= ']'||option_keyword2||q'[']';
+                            ELSE
+                                IF(option_keyword2 IS NULL) THEN  
+                                    cols:=cols||q'[>=']'||option_keyword1||q'[']';                        --첫번째 값만 받을때          (xx 이상)
+                                    
+                                ELSIF(option_keyword1 IS NULL) THEN  
+                                    cols:=cols||q'[<=']'||option_keyword2||q'[']';                          --두번째 값만 받을때        (xx 이하)
+                                    
+                                ELSE
+                                   OPEN SEARCH FOR
+                                        SELECT '두번째 인수는 첫번째 인수보다 같거나 큰 수이어야 합니다' msg FROM dual; 
+                                   return;
+                                END IF;
+                            END IF;
+                        ELSE
+                            cols:=cols||q'[ like '%]'||keyword||q'[%']';        -- 대충 검색해도 나오는 놈들
+                        END IF;
+                        
+                    ELSIF(CATEGORY IN('GENERAL')) THEN
+                    
+                        cols:=cols;         --그냥 넘겨주기 위해서 적어주는것
+
+                    ELSE
+                       raise e_category_not_found;
+                    END IF;
+                    
+                        cols:=cols||' order by "게시번호" desc';
+                        SYS.dbms_output.put_line(cols); --SQL문 확인 출력.         
+                        OPEN SEARCH FOR cols;
+            
+            ELSIF(field IN('ADMIN_MEMBER')) THEN                        -- 멤버 관련 검색
+                cols:=q'[
+                         SELECT m_id "아이디", m_nick "닉네임", m_zip "주소", m_hp "전화번호", m_name "이름", m_day "생성일", m_gender "성별", m_birth "생년월일", age "만 나이"
+                                , m_mail "메일주소", chef_apply "회원상태", checkblist "블랙리스트", m_like "좋아요수",report "누적신고량", rcnt "게시물개수", prcnt "인기게시물개수"
+                         FROM(
+                            SELECT * FROM (
+                             SELECT m_black.m_id, m_black.m_nick, m_black.m_zip,m_black.m_hp,m_black.m_name, m_black.m_day, m_black.m_gender, m_black.m_birth
+                                    ,m_black.age, m_black.m_mail, m_black.chef_apply, m_black.checkblist, m_black.m_like,m_black.report, nvl(m_b_cnt.rcnt,0) rcnt, NVL(m_b_cnt.prcnt,0) prcnt
+                             FROM(
+                                SELECT m_id,m_nick,m_zip,m_hp,m_name,m_day,NVL(TRUNC(MONTHS_BETWEEN(SYSDATE, TO_DATE(SUBSTR(m_birth, 1, 4), 'YYYY'))/12), 0) AS AGE , m_like,
+                                CASE WHEN m_gender=-3 THEN '영구추방' WHEN m_gender=-2 THEN '일시추방' WHEN m_gender=-1 THEN '탈퇴' WHEN m_gender=0 THEN '남자' 
+                                    WHEN m_gender=1 THEN '여자' ELSE '관리자' END m_gender
+                                ,m_birth,m_mail,
+                                CASE WHEN chef_apply=-3 THEN '영구추방' WHEN chef_apply=-2 THEN '일시추방' WHEN chef_apply=-1 THEN '탈퇴'
+                                    WHEN chef_apply=0 THEN '회원'  WHEN chef_apply=1 THEN '셰프신청'
+                                    WHEN chef_apply = 2 THEN '셰프'
+                                    ELSE '관리자' END chef_apply
+                                , DECODE(NVL(checkblist,0),0,'정상',1,'일시정지','블랙리스트') checkblist, NVL(report,0) report
+                                FROM (SELECT m.m_id,m.m_nick,m.m_zip,m.m_hp,m.m_name,m.m_day,m.m_gender,m.m_birth,m.m_mail,m.chef_apply, m.m_like,bl.checkblist,bl.report
+                                        FROM member m INNER JOIN blist bl on m.m_id = bl.m_id(+))) m_black
+                             INNER JOIN (SELECT r.m_id, count(bcnt.i_rcnt) rcnt, count(bcnt.i_prcnt) prcnt FROM recipe r
+                                        INNER JOIN
+                                        (SELECT r.menucd, count(r.menucd) i_rcnt, count(pr.menucd) i_prcnt
+                                        FROM recipe r INNER JOIN popular_recipe pr
+                                        ON pr.menucd(+) = r.menucd
+                                        GROUP BY r.menucd) bcnt
+                                        ON R.MENUCD = bcnt.menucd
+                                        GROUP BY r.m_id) m_b_cnt
+                             ON m_black.m_id = m_b_cnt.m_id(+)))
+                         ]';
+                                    
+                    IF(CATEGORY IN('M_ID','M_NICK','M_ZIP','M_HP','M_NAME','M_DAY','M_GENDER','M_BIRTH','AGE','M_MAIL','CHEF_APPLY','CHECKBLIST','REPORT','RCNT','PRCNT')) THEN
+                    
+                        cols:=cols||q'[ WHERE ]'||CATEGORY;
+                        
+                        IF(CATEGORY IN('M_ID','M_NAME','CHEF_APPLY', 'CHECKBLIST','M_GENDER')) THEN
+                            cols:=cols||q'[ =']'||keyword||q'[']';
+                            
+                        ELSIF(CATEGORY IN('AGE','REPORT','M_LIKE','RCNT','PRCNT')) THEN
+                        
+                            IF(option_keyword1<= option_keyword2) THEN
+                                cols:=cols||q'[ >=']'||option_keyword1||q'[' AND ]'||CATEGORY||q'[ <= ']'||option_keyword2||q'[']';
+                            ELSE
+                                IF(option_keyword2 IS NULL) THEN  
+                                    cols:=cols||q'[>=']'||option_keyword1||q'[']';                        --첫번째 값만 받을때          (xx 이상)
+                                    
+                                ELSIF(option_keyword1 IS NULL) THEN  
+                                    cols:=cols||q'[<=']'||option_keyword2||q'[']';                          --두번째 값만 받을때        (xx 이하)
+                                    
+                                ELSE
+                                   OPEN SEARCH FOR
+                                        SELECT '두번째 인수는 첫번째 인수보다 같거나 큰 수이어야 합니다' msg FROM dual; 
+                                   return;
+                                END IF;
+                            END IF;
+                        ELSE
+                            cols:=cols||q'[ like '%]'||keyword||q'[%']';        -- 대충 검색해도 나오는 놈들
+                        END IF;
+                    ELSIF(CATEGORY IN('GENERAL')) THEN
+                    
+                        cols:=cols;         --그냥 넘겨주기 위해서 적어주는것
+                    
+                    ELSE
+                        raise e_category_not_found;
+                    END IF;
+                    
+                    --아무것도 입력 안할시 아무것도 안타고 이놈으로 온다
+                    cols:=cols||' order by "아이디" asc';
+                        SYS.dbms_output.put_line(cols); --SQL문 확인 출력.         
+                        OPEN SEARCH FOR cols; 
+            
+            ELSE                                                        -- (쿠킹) 클래스 관련 검색
+                cols:=q'[
+                        SELECT c_classcd "쿠킹클래스번호", m_id "회원아이디", m_nick "회원닉네임", m_status "신청현황", chef_id "셰프아이디", chef_nick "셰프닉네임", cook_name "쿠킹클래스이름", c_needs "준비물", nowpersons "현재인원", maxpersons "최대인원", c_zip "쿠킹클래스주소", c_zipdetail "상세주소" FROM(
+                        SELECT chef.c_classcd c_classcd,nvl(mem.m_id,'-') m_id,nvl(mem.m_nick,'-') m_nick, nvl(mem.status,'-') m_status, chef.chef_id chef_id, chef.chef_nick chef_nick, chef.c_cook cook_name, chef.c_ingredients c_needs, cnt.nowPersons nowpersons, chef.maxPersons maxpersons, chef.c_zip c_zip, nvl(chef.c_zipdetail,'-') c_zipdetail
+                          FROM
+                            (SELECT cr.c_classcd,cr.m_id as chef_id,m.m_nick as chef_nick, cc.c_cook, cc.c_date,cc.c_ingredients,cc.c_member as maxPersons, cc.c_zip, cc.c_zipdetail as c_zipdetail
+                            FROM member m INNER JOIN cooking_register cr ON m.m_id = cr.m_id
+                            INNER JOIN cooking_class cc ON cc.c_classcd = cr.c_classcd
+                            WHERE rgreport=3) chef
+                          INNER JOIN
+                            (SELECT cr.c_classcd,cr.m_id m_id,m.m_nick m_nick, decode(cr.rgreport,0,'신청중',1,'수락',2,'반려','셰프') status
+                            FROM member m INNER JOIN cooking_register cr ON m.m_id = cr.m_id
+                            INNER JOIN cooking_class cc ON cc.c_classcd = cr.c_classcd
+                            WHERE rgreport<=3) mem
+                          ON chef.c_classcd = mem.c_classcd(+)
+                          INNER JOIN(
+                            SELECT c_classcd,count(*) nowPersons FROM cooking_register group by c_classcd
+                            ) cnt
+                          ON cnt.c_classcd = chef.c_classcd)
+                          ]';
+                         
+                    IF(CATEGORY IN('C_CLASSCD','M_ID','M_NICK','M_STATUS','CHEF_ID','CHEF_NICK','COOK_NAME','C_NEEDS','C_ZIP','C_ZIPDETAIL')) THEN
+                    
+                        cols:=cols||q'[ WHERE ]'||CATEGORY;
+                        
+                        IF(CATEGORY IN('C_CLASSCD','M_ID','M_STATUS','CHEF_ID')) THEN           -- 버튼 : M_STATUS = 신청중인 회원보기, 반려 회원보기, 수강완료 회원보기
+                            cols:=cols||q'[ =']'||keyword||q'[']';
+                        ELSE
+                            cols:=cols||q'[ like '%]'||keyword||q'[%']';
+                        END IF;  
+                     
+                    ELSIF(CATEGORY IN('GENERAL')) THEN
+                    
+                        cols:=cols;         --그냥 넘겨주기 위해서 적어주는것
+                       
+                    ELSE
+                        raise e_category_not_found;
+                    END IF;
+                    
+                        cols:=cols||' order by "쿠킹클래스번호" desc';
+                        SYS.dbms_output.put_line(cols); --SQL문 확인 출력.         
+                        OPEN SEARCH FOR cols;  
+            END IF;
+                           
+        ELSE
+            raise e_field_not_found;        
+        END IF;   
+        
+    EXCEPTION
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다'); --SQL문 확인 출력.
+       return;
+    WHEN e_category_not_found THEN
+       SYS.dbms_output.put_line('검색할 카테고리가 올바르지 않습니다'); --SQL문 확인 출력.
+       return;
+    WHEN no_data_found THEN
+        OPEN SEARCH FOR
+            SELECT '검색을 완료하지 못했습니다' FROM dual;
+END;
+/

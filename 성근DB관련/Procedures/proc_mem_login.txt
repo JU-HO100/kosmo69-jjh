@@ -1,0 +1,71 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_mem_login
+(user_id IN varchar2
+,user_pw IN varchar2
+,id_nick OUT SYS_REFCURSOR)
+IS
+    cnt number;
+    r_status varchar2(200);
+    withDrawStatus number;
+    
+    e_pause_mem EXCEPTION;
+    e_black_mem EXCEPTION;
+BEGIN
+
+    SELECT count(*) INTO cnt FROM blist bl INNER JOIN member m ON bl.m_id = m.m_id WHERE m.m_id=user_id and m.m_pw = user_pw;   --blist 에 있는 회원인지?
+    
+    IF(cnt>0) THEN
+    
+            SELECT checkblist INTO r_status FROM blist WHERE m_id=user_id; -- blist 에서 어떤 상태인지?
+        
+            IF(r_status=1) THEN     -- 일시정지 회원
+                raise e_pause_mem;
+            ELSIF(r_status=2) THEN  --블랙리스트 회원
+                raise e_black_mem;
+            ELSE
+                OPEN id_nick FOR
+                    SELECT m_id, m_nick FROM member WHERE m_id = user_id AND m_pw = user_pw;
+            END IF;
+            
+    END IF;   
+    
+    
+    SELECT count(*) INTO cnt FROM member WHERE m_id = user_id AND m_pw = user_pw;
+    
+    IF(cnt >0) THEN
+    
+        OPEN id_nick FOR
+            SELECT m_id, m_nick FROM member WHERE m_id = user_id AND m_pw = user_pw;
+    ELSE
+        SELECT count(*) INTO r_status FROM member WHERE m_id=user_id;
+        
+        IF(r_status>0) THEN
+            SELECT m_gender INTO withDrawStatus FROM member WHERE m_id=user_id;
+            
+            IF(withDrawStatus=-1) THEN
+                 OPEN id_nick FOR
+                    SELECT '탈퇴한 회원님의 아이디 입니다' msg FROM dual;
+            ELSE
+                OPEN id_nick FOR
+                    SELECT '패스워드가 틀렸습니다' msg FROM dual;
+            END IF;
+            
+        ELSE
+            OPEN id_nick FOR
+                SELECT '아이디가 틀렸습니다' msg FROM dual;
+        END IF;
+        
+        
+    END IF;
+
+    
+    EXCEPTION
+        WHEN e_pause_mem THEN
+            OPEN id_nick FOR
+                SELECT '일시 정지된 회원입니다' msg FROM dual;
+            return;
+        WHEN e_black_mem THEN
+            OPEN id_nick FOR
+                SELECT '영구 정지된 회원입니다' msg FROM dual;
+            return;
+END;
+/

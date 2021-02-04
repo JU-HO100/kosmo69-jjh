@@ -1,0 +1,84 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_check_mypage
+(
+    FIELD  IN varchar2, -- 항목명
+   user_id IN varchar2, -- 입력값
+    SEARCH OUT SYS_REFCURSOR -- 커서로 반환
+)
+IS
+    cnt number;
+    cols VARCHAR2(4000);  
+    e_field_not_found EXCEPTION;
+    e_class_no_exist EXCEPTION;
+BEGIN       
+        IF (field IN('MY_PAGE','CHECK_COOKCLASS')) THEN    
+        
+            IF(field ='MY_PAGE') THEN
+            
+                cols:=q'[SELECT m_id, m_zip, m_hp, m_name, m_day, m_nick, DECODE(m_gender, 0, '남자', 1, '여자','관리자') m_gender
+                        , m_birth, m_mail,DECODE(chef_apply,0,'회원',1,'셰프신청중',2,'셰프') chef_apply, m_like
+                         FROM member where m_id=]';
+                cols:=cols||q'[']'||user_id||q'[']';
+                
+                OPEN SEARCH FOR cols;  
+                
+            ELSE
+                
+                SELECT count(*) INTO cnt FROM COOKING_REGISTER WHERE m_id=user_id;
+                
+                
+                IF (cnt>0) THEN
+                
+                    cols:=q'[
+                        SELECT for_chef.c_classcd, for_chef.m_id, for_chef.m_nick, for_chef.status, for_chef.chef_id,for_chef.chef_nick,for_chef.c_cook, for_chef.c_ingredients, for_chef.applying,
+                                nvl(cnt.nowpersons,0) nowpersons, for_chef.maxPersons, for_chef.c_zip, for_chef.c_zipdetail,for_chef.c_date
+                        FROM
+                        (
+                            SELECT chef.c_classcd,mem.m_id,mem.m_nick,mem.status, chef.chef_id, chef.chef_nick, chef.c_cook, chef.c_ingredients, applying.applying, chef.maxPersons, chef.c_zip, chef.c_zipdetail,chef.c_date
+                              FROM
+                                (SELECT cr.c_classcd,cr.m_id as chef_id,m.m_nick as chef_nick, cc.c_cook, cc.c_date,cc.c_ingredients,cc.c_member as maxPersons, cc.c_zip,cc.c_zipdetail
+                                FROM member m INNER JOIN cooking_register cr ON m.m_id = cr.m_id
+                                INNER JOIN cooking_class cc ON cc.c_classcd = cr.c_classcd
+                                WHERE rgreport=3) chef
+                              INNER JOIN
+                                (SELECT cr.c_classcd,cr.m_id,m.m_nick, decode(cr.rgreport,0,'신청중',1,'수락',2,'반려','개설셰프') status
+                                FROM member m INNER JOIN cooking_register cr ON m.m_id = cr.m_id
+                                INNER JOIN cooking_class cc ON cc.c_classcd = cr.c_classcd
+                                WHERE rgreport<=3) mem
+                              ON chef.c_classcd = mem.c_classcd
+                              INNER JOIN(
+                                SELECT c_classcd,count(*) applying FROM cooking_register group by c_classcd
+                                ) applying
+                              ON applying.c_classcd = chef.c_classcd
+                          ) for_chef
+                          INNER JOIN
+                            ( SELECT c_classcd,count(*) nowPersons FROM cooking_register where rgreport=1 group by c_classcd ) cnt
+                          ON cnt.c_classcd(+) = for_chef.c_classcd
+                          WHERE for_chef.m_id=
+                        ]';
+                    cols:=cols||q'[']'||user_id||q'[']';
+                      
+                    OPEN SEARCH FOR cols; 
+
+                ELSE
+                    raise e_class_no_exist;
+                END IF;
+                
+
+            END IF;
+            
+                SYS.dbms_output.put_line(cols); --SQL문 확인 출력. 
+                 
+        ELSE
+            raise e_field_not_found;        
+        END IF;   
+        
+    EXCEPTION
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다');
+       
+    WHEN e_class_no_exist THEN
+        OPEN SEARCH
+        FOR SELECT '쿠킹클래스가 존재하지 않습니다' msg
+                FROM dual; 
+END;
+/

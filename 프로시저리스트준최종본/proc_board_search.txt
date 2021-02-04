@@ -1,0 +1,123 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_search
+(
+-- 검색기능에 대한 프로시저
+-- in 파라미터
+--    1. 검색항목 (멤버넘버(코드넘버), 멤버이름, 멤버 전화번호, 멤버아이디)
+--    2. 검색어 (전화번호, 이름은 LIKE %임, 아이디랑 코드넘버는 정확히 입력)
+-- out 파라미터
+--    0. 검색 결과 (커서)
+    FIELD IN varchar2, -- 항목명
+    USER_ID IN varchar2,
+   KEYWORD_ IN varchar2, -- 입력값
+    SEARCH OUT SYS_REFCURSOR -- 커서로 반환
+)
+IS
+    cnt number;
+    cols VARCHAR2(4000);    
+    e_field_not_found EXCEPTION;
+BEGIN       
+        IF (field IN('M_NICK','FOODNAME','RECIPE_INFO','JAELYO','CATEGORY','FOODGROUP','HASHTAG')) THEN          
+            cols:=q'[
+                    SELECT * FROM
+                    (SELECT t_menu.menucd, t_menu. category, t_menu.foodgroup,t_menu.foodname,t_menu.main_img, memContent.recipe_info, t_ingred.jaelyo, t_ingred.weight, t_ingred.unit
+                           , t_hash.hashtag, memContent.m_id, memContent.m_nick, memContent.creation_date, memContent.hit, nvl(t_like.cnt,0) cnt
+                    FROM (SELECT r.menucd, mem.m_id, mem.m_nick, r.recipe_info, r.creation_date, r.hit FROM member mem INNER JOIN recipe r ON mem.m_id = r.m_id) memContent
+                    INNER JOIN (SELECT r.menucd, count(*) cnt FROM likes lk INNER JOIN recipe r ON r.menucd = lk.menucd GROUP BY r.menucd) t_like
+                    ON memContent.menucd = t_like.menucd(+)
+                    INNER JOIN (select m.menucd, mc.category,fc.foodgroup, m.foodname, m.main_img 
+                    FROM menu m INNER JOIN food_category fc ON m.foodcategorycd = fc.foodcategorycd
+                    INNER JOIN menu_category mc ON MC.CATEGORYCD = m.categorycd) t_menu
+                    ON memContent.menucd = t_menu.menucd
+                    INNER JOIN (SELECT menucd
+                         , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', jaelyo) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) jaelyo
+                           , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', weight) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) weight
+                           , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,',', unit) ORDER BY menucd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) unit
+                      FROM  (SELECT r.menucd, J.JAELYO,rw.weight,j.unit FROM RECIPE_WEIGH rw INNER JOIN RECIPE r ON RW.MENUCD = r.menucd
+                     INNER JOIN JAELYO j ON J.JAELYOCD = RW.JAELYOCD order by menucd desc) a
+                     GROUP BY menucd) t_ingred
+                     ON memContent.menucd = t_ingred.menucd
+                     INNER JOIN (SELECT menucd
+                         , SUBSTR(
+                            XMLAGG(
+                                XMLELEMENT(COL ,' ', hashtag) ORDER BY hashtagcd).EXTRACT('//text()'
+                            ).GETSTRINGVAL()
+                           , 2) hashtag
+                      FROM hashtag
+                     GROUP BY menucd) t_hash
+                     ON memContent.menucd=t_hash.menucd) a
+                     WHERE 
+            ]'||field;
+            
+            IF(field IN('M_NICK','CATEGORY','FOODGROUP')) THEN
+            
+                cols:=cols||q'[ = ']'||KEYWORD_||q'[']';
+                
+                SELECT count(*) INTO cnt FROM keywordcl WHERE keyword = KEYWORD_ AND m_id = user_id;
+                
+                IF(cnt>0) THEN
+                    UPDATE KEYWORDCL 
+                    SET keycount = keycount+1
+                    WHERE keyword = KEYWORD_
+                    AND m_id = user_id;
+                ELSE
+                    INSERT INTO keywordcl VALUES(user_id,KEYWORD_,TO_CHAR(sysdate, 'YYYY-MM-DD'),1);
+                END IF;
+                
+                
+                
+            ELSE
+            -- 동적쿼리 '' <= 싱글쿼테 2개 = 싱글쿼테 1개 이다
+            -- 동적쿼 싱글쿼테이션의 불편함을 해소해주기 위한 방법으로 q'[]'  <= 가 있다.리
+            -- 소문자 q가 아닌 대문자 Q로도 대체가능
+            --  정규표현식을  조심해야한다
+            --  Q'[and REGEXP_LIKE(col, '[^0-9]')]'  -- 대괄호가 중간에 닫히면서 오류 발생
+            --  Q'{and REGEXP_LIKE(col, '[^0-9]')}'   <= 정규표현식은 꼭 대괄호가 아니라도 사용가능
+            --  Q'$and REGEXP_LIKE(col, '[^0-9]')$'    <= 이런식으로도 정규표현식 사용 가능
+            
+            /* 알파벳 하나 붙이는 유사한 기능들
+                SELECT N'가가가'    -- NCAHR
+                     , 100D       -- Double
+                     , 100F       -- Flout
+                     , 10E3       -- 10 * 10^3
+                  FROM dual */
+                cols:=cols||q'[ like '%]'||KEYWORD_||q'[%']';
+                
+                SELECT count(*) INTO cnt FROM keywordcl WHERE keyword = KEYWORD_ AND m_id = user_id;
+                
+                IF(cnt>0) THEN
+                    UPDATE KEYWORDCL 
+                    SET keycount = keycount+1
+                    WHERE keyword = KEYWORD_
+                    AND m_id = user_id;
+                ELSE
+                    INSERT INTO keywordcl VALUES(user_id,KEYWORD_,TO_CHAR(sysdate, 'YYYY-MM-DD'),1);
+                END IF;
+                
+            END IF;
+                cols:=cols||' ORDER BY menucd desc';
+                SYS.dbms_output.put_line(cols); --SQL문 확인 출력.  
+                      
+            OPEN SEARCH FOR cols;       
+            --SYS.dbms_output.put_line(SQL%rowcount);   
+            commit;
+        ELSE
+            raise e_field_not_found;        
+        END IF;   
+        
+    EXCEPTION
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다'); --SQL문 확인 출력.
+END;
+/

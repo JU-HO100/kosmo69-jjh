@@ -1,0 +1,36 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_board_give_info
+(
+   field IN VARCHAR2,
+   keyword IN VARCHAR2,
+   csr_board_info OUT sys_refcursor -- 커서로 반환
+)
+IS
+    cols VARCHAR2(500);
+    e_field_not_found EXCEPTION;
+BEGIN       
+
+   IF(field IN('JAELYO_LIST','LAGE_CATEGORY','SMALL_CATEGORY')) THEN
+   
+        IF(field IN('JAELYO_LIST')) THEN
+            cols := 'SELECT jaelyo, unit FROM jaelyo where jaelyo like '||q'['%]'||keyword||q'[%']';
+            OPEN csr_board_info FOR
+                cols;        --재료리스트 - (돼지-목살, 근),(계란, 개)...
+        ELSIF(field IN('LAGE_CATEGORY')) THEN
+            OPEN csr_board_info FOR
+                SELECT category FROM menu_category;     --한식, 중식 ...
+        ELSE
+            OPEN csr_board_info FOR
+                SELECT foodgroup FROM food_category;    --면, 볶음....
+        END IF;
+        
+        
+   ELSE
+        raise e_field_not_found;
+        
+   END IF;
+            
+    EXCEPTION
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다'); --SQL문 확인 출력.
+END;
+/

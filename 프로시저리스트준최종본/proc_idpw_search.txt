@@ -1,0 +1,51 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_idpw_search(     
+   FIELD IN varchar2, -- 항목명
+   USER_ID IN varchar2, -- 입력값
+   USER_TEL IN varchar2,
+   USER_EMAIL IN varchar2,
+   SEARCH OUT SYS_REFCURSOR -- 커서로 반환
+)
+IS
+    cnt varchar2(500);
+    e_field_no_found EXCEPTION;
+    e_search_noExist EXCEPTION;
+    
+BEGIN  
+    
+      IF FIELD='ID_SEARCH' THEN       
+        SELECT COUNT(*) into cnt FROM member
+        WHERE m_hp=USER_TEL and m_mail = user_email;
+        IF cnt >0 then
+            OPEN SEARCH FOR
+                SELECT m_id 
+                FROM member WHERE m_hp=USER_TEL and m_mail = user_email;   
+        ELSE
+            raise e_search_noExist; 
+        end if;
+        
+                
+      ELSIF FIELD='PW_SEARCH' THEN       
+        SELECT COUNT(*) into cnt FROM member
+        WHERE m_id=user_id and m_hp=USER_TEL and m_mail = user_email;
+        IF cnt >0 then
+            OPEN SEARCH FOR
+                SELECT m_pw
+                FROM member WHERE m_id=user_id and m_hp=USER_TEL and m_mail = user_email;
+          ELSE
+            raise e_search_noExist;   
+          END IF;
+          
+      ELSE
+        raise e_field_no_found;
+      END IF;
+
+EXCEPTION
+    WHEN e_field_no_found THEN
+       OPEN SEARCH FOR 
+        SELECT '검색할 항목이 올바르지 않습니다' as msg FROM dual;
+       
+     WHEN e_search_noExist THEN
+       OPEN SEARCH FOR 
+        SELECT '조건을 검색하지 못하였습니다' as msg FROM dual;
+END;
+/

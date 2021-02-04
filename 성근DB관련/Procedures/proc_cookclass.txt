@@ -1,0 +1,142 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_cookclass(
+  field IN varchar2,
+  p_class_no IN number,
+  p_user_id IN member.m_id%TYPE,
+  p_class_name IN cooking_class.c_cook%TYPE,
+  p_needs IN cooking_class.c_ingredients%TYPE,
+  p_address IN cooking_class.c_zip%TYPE,
+  p_add_detail IN cooking_class.c_zipdetail%TYPE,
+  p_max_persons IN cooking_class.c_member%TYPE,
+  p_date IN cooking_class.c_date%TYPE,
+  msg OUT varchar2
+)
+IS
+  cnt number;
+  secCnt number;
+  maxPersons number;
+  classCheck number;
+  class_num number;
+  chefCheck NUMBER;
+  e_id_not_chef EXCEPTION; -- 예외처리를 위해 변수선언
+  e_field_not_found EXCEPTION;
+  e_need_login EXCEPTION;
+
+BEGIN  
+    IF(field IN ('OPEN_COOKCLASS','ATTEND_COOKCLASS','UPD_COOKCLASS')) THEN
+    SELECT count(*) INTO cnt FROM member WHERE m_id=p_user_id;
+        --====================================쿠킹클래스 열기
+        IF(field IN('OPEN_COOKCLASS')) THEN
+            IF(cnt>0) THEN
+        
+                SELECT chef_apply into chefCheck FROM member WHERE m_id=p_user_id;
+            
+                IF(chefCheck>1) THEN    
+                    
+
+                     
+                    --상세주소에 값이 빈 문자열이니? YES => '-'   default     or NO => 주소 그대로 출력
+                    IF(p_add_detail ='') THEN
+                        INSERT INTO cooking_class VALUES(COOKING_CLASS_SEQ.nextval, p_class_name,p_needs,p_address,p_max_persons,REPLACE(p_date,'T',' '),'-');
+                    ELSE
+                        INSERT INTO cooking_class VALUES(COOKING_CLASS_SEQ.nextval, p_class_name,p_needs,p_address,p_max_persons,REPLACE(p_date,'T',' '),p_add_detail);
+                    END IF;
+
+                    --C_CLASSCD 따놓기
+                    SELECT c_classcd INTO class_num FROM cooking_class WHERE c_cook=p_class_name and c_date = REPLACE(p_date,'T',' ') and c_zip=p_address;
+                    
+                    INSERT INTO cooking_register VALUES(p_user_id,class_num,3);
+                    
+                    COMMIT;
+                    
+                    msg:='쿠킹클래스가 생성되었습니다';
+        
+                ELSE
+                     raise e_id_not_chef;
+                END IF;
+            
+            ELSE
+                raise e_need_login;
+            END IF;
+            
+        --====================================쿠킹클래스 업데이트
+        ELSIF(field IN('UPD_COOKCLASS')) THEN
+            SELECT count(*) INTO cnt FROM member WHERE m_id=p_user_id;
+            
+            IF(cnt>0) THEN
+            
+                SELECT rgreport INTO chefCheck FROM cooking_register WHERE c_classcd= p_class_no and m_id=p_user_id;
+                
+                IF(chefCheck = 3) THEN
+                    UPDATE COOKING_CLASS
+                    SET    c_cook=p_class_name,
+                           c_ingredients = p_needs,
+                           c_zip = p_address,
+                           c_member = p_max_persons,
+                           c_date = REPLACE(p_date,'T',' '),
+                           c_zipdetail = p_add_detail
+                    WHERE c_classcd = p_class_no;
+                    commit;
+                    msg:='쿠킹클래스가 업데이트 되었습니다';
+                END IF; 
+                           
+            ELSE
+                raise e_need_login;
+            END IF;
+            
+
+         --====================================쿠킹클래스 참여 
+        ELSE
+        
+            IF(cnt>0) THEN
+                --내가 이미 등록되어있는지?
+                SELECT count(*) into classCheck FROM cooking_register WHERE m_id=p_user_id and c_classcd=p_class_no;
+                
+                --쿠킹클래스의 현재 정원
+                SELECT count(*) INTO secCnt FROM cooking_register WHERE c_classcd=p_class_no AND rgreport=1;
+                
+                SELECT c_member INTO maxPersons FROM cooking_class WHERE c_classcd=p_class_no;
+                
+                IF(secCnt > maxPersons) THEN
+                    msg:='쿠킹클래스의 정원을 초과할 수 없습니다';
+                ELSE
+                
+                    IF(classCheck>0) THEN
+                        msg:='이미 등록되어있는 쿠킹클래스입니다';
+                    ELSE
+                        INSERT INTO cooking_register VALUES(p_user_id,p_class_no,0);
+                        commit;
+                        
+                        msg:='쿠킹클래스 신청완료되었습니다';
+                    END IF;
+                    
+                END IF;
+
+                
+            ELSE
+                raise e_need_login;
+            END IF;
+        
+            
+        END IF;
+    
+    ELSE
+        raise e_field_not_found;
+    END IF;
+    
+    
+    
+
+  EXCEPTION -- 예외 처리
+    WHEN e_id_not_chef THEN
+      msg:='셰프로 등록되어 있지 않습니다';
+      ROLLBACK;
+      
+    WHEN e_need_login THEN
+      msg:='로그인 후 이용하여 주십시오';
+      ROLLBACK;
+      
+    WHEN e_field_not_found THEN
+       SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다');
+
+END;
+/

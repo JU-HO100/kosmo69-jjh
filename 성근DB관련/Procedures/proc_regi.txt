@@ -1,0 +1,123 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_regi(
+  FIELD IN varchar2,
+  USER_ID IN member.M_ID%TYPE,
+  USER_PW IN member.M_PW%TYPE,
+  USER_ZIP IN member.M_ZIP%TYPE,
+  USER_HP IN member.M_HP%TYPE,
+  USER_NAME IN member.M_NAME%TYPE,
+  USER_NICK IN member.M_NICK%TYPE,
+  USER_GENDER IN member.M_GENDER%TYPE,
+  USER_BIRTH IN member.M_BIRTH%TYPE,
+  USER_MAIL IN member.M_MAIL%TYPE,
+  msg OUT varchar2
+)
+IS
+  nickCnt number;
+  cnt NUMBER;
+  idByte number;
+  pwByte number;
+  nickByte number;
+  
+  e_id_aldy_exist EXCEPTION; -- 예외처리를 위해 변수선언
+  e_nick_aldy_exist EXCEPTION;
+  e_field_not_found EXCEPTION;
+
+BEGIN  
+  IF (field IN('ID_CHECK','REGISTER')) THEN   
+      
+      SELECT count(*) INTO nickCnt FROM member
+      WHERE m_nick = user_nick;
+      
+      SELECT COUNT(*) INTO cnt FROM member
+      WHERE m_id = user_id;
+      
+      IF cnt > 0 THEN
+        raise e_id_aldy_exist; --EXCEPTION 을 찾아가라.
+        
+      ELSIF nickCnt > 0 THEN
+        raise e_nick_aldy_exist;
+        
+      ELSE
+        IF(field='REGISTER') THEN
+            
+            --유효성 검사에 사용할 문자열의 바이트
+            SELECT lengthb(user_id) INTO idByte FROM dual;
+            SELECT lengthb(user_pw) INTO pwByte FROM dual;
+            SELECT lengthb(user_nick) INTO nickByte FROM dual;
+            
+            IF(idByte>3 and idByte<21) THEN
+                IF(pwByte>3 and pwByte<21) THEN
+                    IF(nickByte>3 and nickByte<21) THEN
+                      INSERT INTO member
+                        (M_ID, M_PW, M_ZIP, M_HP,M_NAME,M_DAY,M_NICK,M_GENDER,M_BIRTH,M_MAIL)
+                        VALUES(USER_ID,USER_PW, USER_ZIP, USER_HP,USER_NAME,TO_CHAR(sysdate,'YYYY-MM-DD')
+                            ,USER_NICK,USER_GENDER,USER_BIRTH,USER_MAIL);
+                        msg:='회원가입이 완료 되었습니다';
+                        COMMIT;
+                        ELSE
+                        msg:='닉네임은 4byte 이상 20바이트 이하입니다';
+                        return;
+                    END IF;
+
+                ELSE
+                    msg:='비밀번호는 4자 이상 20자이하 입니다.';
+                    return;
+                END IF;
+            ELSE
+                msg:='아이디는 4자 이상 20자이하 입니다';
+                return;
+            END IF;
+            
+        ELSIF(field='ID_CHECK') THEN
+            --유효성검사에 사용할 아이디의 바이트
+            SELECT lengthb(user_id) INTO idByte FROM dual;
+            
+            IF(idByte>3 AND idByte<21) THEN
+                msg:='사용 가능한 아이디 입니다';
+                return;
+            ELSE
+                msg:='아이디는 4자 이상 20자이하 입니다';
+                return;
+            END IF;
+            
+        END IF;
+      END IF; 
+      
+  ELSIF (field IN('NICK_CHECK')) THEN
+  
+    SELECT COUNT(*) into nickCnt FROM member
+    WHERE m_nick = user_nick;
+    --유효성 검사에 사용할 닉네임의 바이트
+    SELECT lengthb(user_nick) into nickByte FROM dual;
+    
+    IF nickCnt>0 THEN
+        raise e_nick_aldy_exist;
+    ELSE
+        IF(nickByte>3 AND nickByte<21) THEN
+            msg:='사용 가능한 닉네임 입니다';
+            return;
+        ELSE
+            msg:='닉네임은 4byte 이상 20바이트 이하입니다';
+            return;
+        END IF;
+        
+    END IF;
+  ELSE
+      raise e_field_not_found;        
+  END IF;   
+ 
+    commit;
+
+  EXCEPTION -- 예외 처리
+    WHEN e_id_aldy_exist THEN
+      msg:='이미 등록한 아이디입니다.';
+      ROLLBACK;
+      return;
+      
+    WHEN e_field_not_found THEN
+     SYS.dbms_output.put_line('검색할 항목이 올바르지 않습니다'); --SQL문 확인 출력
+    WHEN e_nick_aldy_exist THEN
+        msg:='이미 사용하고 있는 닉네임입니다';
+        return;
+END;
+/

@@ -1,0 +1,60 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_cancel_cookclass(
+  p_class_no IN cooking_register.c_classcd%TYPE,
+  p_user_id IN member.m_id%TYPE,
+  msg OUT varchar2
+)
+IS
+    cnt number;
+    chefCheck number;
+    e_class_no_exist EXCEPTION;
+
+BEGIN  
+
+    SELECT count(*) into cnt FROM cooking_register WHERE c_classcd = p_class_no AND m_id=p_user_id;
+    
+    IF(cnt>0) THEN
+        SELECT rgreport into chefCheck FROM cooking_register WHERE c_classcd = p_class_no AND m_id=p_user_id;
+        
+        IF(chefCheck = 3) THEN -- 만약 삭제의 주체가  셰프라면?
+        
+            DELETE FROM cooking_register WHERE c_classcd = p_class_no;
+            
+            DELETE FROM cooking_class WHERE c_classcd = p_class_no;
+            
+            msg:='쿠킹클래스가 삭제되었습니다';
+            
+        ELSIF(chefCheck = 2) THEN
+        
+            DELETE FROM cooking_register WHERE c_classcd = p_class_no and m_id=p_user_id;
+        
+            msg:= '반려되었던 쿠킹클래스를 삭제처리했습니다';
+            
+        ELSIF(chefCheck =1 ) THEN
+            
+            DELETE FROM cooking_register WHERE c_classcd = p_class_no and m_id=p_user_id;
+            
+            msg:='수강을 취소하셨습니다';
+        
+        ELSIF(chefCheck=0) THEN
+            
+            DELETE FROM cooking_register WHERE c_classcd = p_class_no;
+            
+            msg:='수강신청을 취소하셨습니다';
+        
+        END IF;
+    
+    ELSE
+        raise e_class_no_exist;
+    END IF;
+
+    COMMIT;
+
+  EXCEPTION -- 예외 처리
+      
+    WHEN e_class_no_exist THEN
+      msg:='신청한 쿠킹클래스가 존재하지 않습니다';
+      ROLLBACK;
+      
+
+END;
+/

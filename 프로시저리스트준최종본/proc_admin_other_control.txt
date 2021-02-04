@@ -1,0 +1,99 @@
+CREATE OR REPLACE PROCEDURE TEAM_NULLPOINT.proc_admin_other_control(     
+   FIELD IN varchar2,
+   master_id IN varchar2,
+   user_id IN varchar2,
+   b_c_num IN varchar2,
+
+   masterCsr OUT sys_refcursor
+)
+IS
+    cnt number;                         --cnt 하나로 돌려서 해도 되지만 구분해주기 위해서 여러개 사용함
+    masterChecker varchar2(20);
+    
+    e_no_master_right EXCEPTION;
+BEGIN  
+    
+    SELECT count(*) INTO cnt FROM master_user WHERE m_id = master_id;   --관리자인지 체크
+    
+    IF(cnt>0) THEN
+        SELECT master_groupid INTO masterChecker FROM master_user WHERE m_id = master_id; --무슨 관리자인지 체크
+    
+        IF(masterChecker IN('MG1','MG2','MG3')) THEN      --무슨 권한을 가지고있나?
+        
+            --============================총관리자 or 쿠킹클래스 관리자 ======================================
+            IF(field IN('DELETE_COOKCLASS','KICK_PERSON_CC')) THEN
+                IF(masterChecker IN('MG1','MG3')) THEN
+                
+                     IF(field IN('DELETE_COOKCLASS')) THEN
+                     
+                        DELETE FROM cooking_register WHERE c_classcd = b_c_num;
+                        DELETE FROM cooking_class WHERE c_classcd=b_c_num;
+                        
+                        commit;
+                        OPEN masterCsr FOR
+                            SELECT '해당쿠킹클래스를 제거하였습니다' msg FROM dual;
+                            
+                     ELSIF(field IN('KICK_PERSON_CC')) THEN
+                        DELETE FROM cooking_register WHERE m_id = user_id;
+                        
+                        commit;
+                        OPEN masterCsr FOR
+                            SELECT '해당인원을 해당쿠킹클래스에서 제거하였습니다' msg FROM dual;
+                     END IF;
+                     
+                 ELSE
+                    raise e_no_master_right;
+                 END IF;
+            END IF;
+
+                    
+            --============================총관리자 or 게시판 관리자 ======================================
+            IF(field IN('DELETE_BOARD')) THEN
+            
+                IF(masterChecker IN('MG1','MG2')) THEN
+                
+                    IF(field IN('DELETE_BOARD')) THEN
+                        
+                        cnt:=0;         --존재 유무 담을 변수 초기화
+                        
+                        SELECT count(*) INTO cnt FROM popular_recipe WHERE menucd=b_c_num;
+                        
+                        IF(cnt>0) THEN
+                            DELETE FROM popular_recipe WHERE menucd = b_c_num;
+                        ELSE
+                            dbms_output.put_line('인기게시물이 존재하지 않습니다');
+                        END IF;
+                    
+                        DELETE FROM hashtag WHERE menucd = b_c_num;
+                        DELETE FROM recipe_weigh WHERE menucd = b_c_num;
+                        DELETE FROM likes WHERE menucd = b_c_num;
+                        DELETE FROM recipe WHERE menucd = b_c_num;
+                        DELETE FROM menu WHERE menucd = b_c_num;
+                        
+                        commit;
+                        
+                        OPEN masterCsr FOR
+                            SELECT '해당 글을 강제로 제거하였습니다' msg FROM dual;
+                    END IF;
+                ELSE
+                    raise e_no_master_right;
+                END IF;
+                
+            END IF;
+    
+        ELSE
+            raise e_no_master_right;
+        
+        END IF;
+    END IF;
+    
+      
+
+EXCEPTION
+    WHEN e_no_master_right THEN
+        OPEN masterCsr FOR
+            SELECT '접근권한이 없습니다' msg FROM dual;
+        return;
+
+END;
+/

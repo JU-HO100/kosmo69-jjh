@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="np.admin.mybatis.AdminMapper"> 
+	<resultMap id="adminMap" type="hashmap"/>
+
+<!-- 총관리자 권한, 멤버관리자의 기능을 담당 -->
+     <select id="proc_admin_mem_controller" parameterType="map" statementType="CALLABLE">
+        { call proc_admin_mem_controller(
+	           #{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{admin_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{right,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=adminMap}
+           )}
+    </select>
+    
+    <!-- 게시판, 레시피 관리자의 기능을 담당 -->
+    <select id="proc_admin_other_control" parameterType="map" statementType="CALLABLE">
+        { call proc_admin_other_control(
+	           #{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{admin_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{m_id,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{b_c_num,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=adminMap}
+           )}
+    </select>
+    
+    <!-- admin 입장시 다양한 조건검색기능 제공 -->
+    <select id="proc_admin_search" parameterType="map" statementType="CALLABLE">
+        { call proc_admin_search(
+	           #{field,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{category,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{keyword,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{option_keyword1,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{option_keyword2,mode=IN,jdbcType=VARCHAR, javaType=java.lang.String}
+	           ,#{csr, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=adminMap}
+           )}
+    </select>
+    
+</mapper>
